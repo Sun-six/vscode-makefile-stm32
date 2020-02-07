@@ -1,0 +1,113 @@
+ARM GAS  /tmp/cctnkClG.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"beep.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.BEEP_GPIO_Config,"ax",%progbits
+  20              		.align	2
+  21              		.global	BEEP_GPIO_Config
+  22              		.thumb
+  23              		.thumb_func
+  25              	BEEP_GPIO_Config:
+  26              	.LFB29:
+  27              		.file 1 "./module/src/beep.c"
+   1:./module/src/beep.c **** #include "beep.h"
+   2:./module/src/beep.c **** 
+   3:./module/src/beep.c **** void BEEP_GPIO_Config(void)
+   4:./module/src/beep.c **** {
+  28              		.loc 1 4 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 8
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32 0000 00B5     		push	{lr}
+  33              	.LCFI0:
+  34              		.cfi_def_cfa_offset 4
+  35              		.cfi_offset 14, -4
+  36 0002 83B0     		sub	sp, sp, #12
+  37              	.LCFI1:
+  38              		.cfi_def_cfa_offset 16
+   5:./module/src/beep.c **** 	GPIO_InitTypeDef GPIO_InitStructure;
+   6:./module/src/beep.c **** 	RCC_APB2PeriphClockCmd( RCC_APB2Periph_GPIOB, ENABLE); // 使能PB端口时钟  
+  39              		.loc 1 6 0
+  40 0004 0121     		movs	r1, #1
+  41 0006 0820     		movs	r0, #8
+  42 0008 FFF7FEFF 		bl	RCC_APB2PeriphClockCmd
+  43              	.LVL0:
+   7:./module/src/beep.c **** 	
+   8:./module/src/beep.c **** 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;	
+  44              		.loc 1 8 0
+  45 000c 4FF48073 		mov	r3, #256
+  46 0010 ADF80430 		strh	r3, [sp, #4]	@ movhi
+   9:./module/src/beep.c **** 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;       
+  47              		.loc 1 9 0
+  48 0014 1023     		movs	r3, #16
+  49 0016 8DF80730 		strb	r3, [sp, #7]
+ARM GAS  /tmp/cctnkClG.s 			page 2
+
+
+  10:./module/src/beep.c **** 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  50              		.loc 1 10 0
+  51 001a 0323     		movs	r3, #3
+  52 001c 8DF80630 		strb	r3, [sp, #6]
+  11:./module/src/beep.c **** 	GPIO_Init(GPIOB, &GPIO_InitStructure);  //初始化PB端口  
+  53              		.loc 1 11 0
+  54 0020 01A9     		add	r1, sp, #4
+  55 0022 0448     		ldr	r0, .L3
+  56 0024 FFF7FEFF 		bl	GPIO_Init
+  57              	.LVL1:
+  12:./module/src/beep.c **** 	BEEP=0;//关闭蜂鸣器
+  58              		.loc 1 12 0
+  59 0028 0022     		movs	r2, #0
+  60 002a 034B     		ldr	r3, .L3+4
+  61 002c 1A60     		str	r2, [r3]
+  13:./module/src/beep.c **** }
+  62              		.loc 1 13 0
+  63 002e 03B0     		add	sp, sp, #12
+  64              	.LCFI2:
+  65              		.cfi_def_cfa_offset 4
+  66              		@ sp needed
+  67 0030 5DF804FB 		ldr	pc, [sp], #4
+  68              	.L4:
+  69              		.align	2
+  70              	.L3:
+  71 0034 000C0140 		.word	1073810432
+  72 0038 A0812142 		.word	1109492128
+  73              		.cfi_endproc
+  74              	.LFE29:
+  76              		.text
+  77              	.Letext0:
+  78              		.file 2 "/opt/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/machine/_default_types.h"
+  79              		.file 3 "/opt/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/sys/_stdint.h"
+  80              		.file 4 "cmsis/stm32f10x.h"
+  81              		.file 5 "libraries/inc/stm32f10x_gpio.h"
+  82              		.file 6 "libraries/inc/stm32f10x_rcc.h"
+  83              		.file 7 "cmsis/core_cm3.h"
+ARM GAS  /tmp/cctnkClG.s 			page 3
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 beep.c
+     /tmp/cctnkClG.s:20     .text.BEEP_GPIO_Config:00000000 $t
+     /tmp/cctnkClG.s:25     .text.BEEP_GPIO_Config:00000000 BEEP_GPIO_Config
+     /tmp/cctnkClG.s:71     .text.BEEP_GPIO_Config:00000034 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+RCC_APB2PeriphClockCmd
+GPIO_Init

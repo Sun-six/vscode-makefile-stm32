@@ -1,0 +1,268 @@
+ARM GAS  /tmp/ccDMsinx.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"delay.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.Delay_Init,"ax",%progbits
+  20              		.align	2
+  21              		.global	Delay_Init
+  22              		.thumb
+  23              		.thumb_func
+  25              	Delay_Init:
+  26              	.LFB29:
+  27              		.file 1 "./module/src/delay.c"
+   1:./module/src/delay.c **** #include "delay.h"
+   2:./module/src/delay.c **** 
+   3:./module/src/delay.c **** static u8  fac_us=0;							//us延时倍乘数			   
+   4:./module/src/delay.c **** static u16 fac_ms=0;							//ms延时倍乘数
+   5:./module/src/delay.c **** 
+   6:./module/src/delay.c **** void Delay_Init(void)
+   7:./module/src/delay.c **** {
+  28              		.loc 1 7 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32 0000 08B5     		push	{r3, lr}
+  33              	.LCFI0:
+  34              		.cfi_def_cfa_offset 8
+  35              		.cfi_offset 3, -8
+  36              		.cfi_offset 14, -4
+   8:./module/src/delay.c **** 	SysTick_CLKSourceConfig(SysTick_CLKSource_HCLK_Div8);	//选择外部时钟  HCLK/8
+  37              		.loc 1 8 0
+  38 0002 6FF00400 		mvn	r0, #4
+  39 0006 FFF7FEFF 		bl	SysTick_CLKSourceConfig
+  40              	.LVL0:
+   9:./module/src/delay.c **** 	fac_us=SystemCoreClock/8000000;				//为系统时钟的1/8  
+  41              		.loc 1 9 0
+  42 000a 084B     		ldr	r3, .L3
+  43 000c 1B68     		ldr	r3, [r3]
+  44 000e 084A     		ldr	r2, .L3+4
+  45 0010 A2FB0323 		umull	r2, r3, r2, r3
+  46 0014 C3F34753 		ubfx	r3, r3, #21, #8
+  47 0018 064A     		ldr	r2, .L3+8
+  48 001a 1370     		strb	r3, [r2]
+  10:./module/src/delay.c **** 	fac_ms=(u16)fac_us*1000;					//每个ms需要的systick时钟数   
+ARM GAS  /tmp/ccDMsinx.s 			page 2
+
+
+  49              		.loc 1 10 0
+  50 001c C3EB4312 		rsb	r2, r3, r3, lsl #5
+  51 0020 03EB8203 		add	r3, r3, r2, lsl #2
+  52 0024 DA00     		lsls	r2, r3, #3
+  53 0026 044B     		ldr	r3, .L3+12
+  54 0028 1A80     		strh	r2, [r3]	@ movhi
+  55 002a 08BD     		pop	{r3, pc}
+  56              	.L4:
+  57              		.align	2
+  58              	.L3:
+  59 002c 00000000 		.word	SystemCoreClock
+  60 0030 83DE1B43 		.word	1125899907
+  61 0034 00000000 		.word	.LANCHOR0
+  62 0038 00000000 		.word	.LANCHOR1
+  63              		.cfi_endproc
+  64              	.LFE29:
+  66              		.section	.text.DelayUs,"ax",%progbits
+  67              		.align	2
+  68              		.global	DelayUs
+  69              		.thumb
+  70              		.thumb_func
+  72              	DelayUs:
+  73              	.LFB30:
+  11:./module/src/delay.c **** }
+  12:./module/src/delay.c **** //延时nus
+  13:./module/src/delay.c **** //nus为要延时的us数.		    								   
+  14:./module/src/delay.c **** void DelayUs(u32 nus)
+  15:./module/src/delay.c **** {		
+  74              		.loc 1 15 0
+  75              		.cfi_startproc
+  76              		@ args = 0, pretend = 0, frame = 0
+  77              		@ frame_needed = 0, uses_anonymous_args = 0
+  78              		@ link register save eliminated.
+  79              	.LVL1:
+  16:./module/src/delay.c **** 	u32 temp;	    	 
+  17:./module/src/delay.c **** 	SysTick->LOAD=nus*fac_us; 					//时间加载	  		 
+  80              		.loc 1 17 0
+  81 0000 0C4B     		ldr	r3, .L7
+  82 0002 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+  83 0004 00FB03F0 		mul	r0, r0, r3
+  84              	.LVL2:
+  85 0008 0B4B     		ldr	r3, .L7+4
+  86 000a 5860     		str	r0, [r3, #4]
+  18:./module/src/delay.c **** 	SysTick->VAL=0x00;        					//清空计数器
+  87              		.loc 1 18 0
+  88 000c 0022     		movs	r2, #0
+  89 000e 9A60     		str	r2, [r3, #8]
+  19:./module/src/delay.c **** 	SysTick->CTRL|=SysTick_CTRL_ENABLE_Msk ;	//开始倒数	  
+  90              		.loc 1 19 0
+  91 0010 1A68     		ldr	r2, [r3]
+  92 0012 42F00102 		orr	r2, r2, #1
+  93 0016 1A60     		str	r2, [r3]
+  94              	.L6:
+  20:./module/src/delay.c **** 	do
+  21:./module/src/delay.c **** 	{
+  22:./module/src/delay.c **** 		temp=SysTick->CTRL;
+  95              		.loc 1 22 0 discriminator 1
+ARM GAS  /tmp/ccDMsinx.s 			page 3
+
+
+  96 0018 074B     		ldr	r3, .L7+4
+  97 001a 1B68     		ldr	r3, [r3]
+  98              	.LVL3:
+  23:./module/src/delay.c **** 	}while((temp&0x01)&&!(temp&(1<<16)));		//等待时间到达   
+  99              		.loc 1 23 0 discriminator 1
+ 100 001c 03F00113 		and	r3, r3, #65537
+ 101              	.LVL4:
+ 102 0020 012B     		cmp	r3, #1
+ 103 0022 F9D0     		beq	.L6
+  24:./module/src/delay.c **** 	SysTick->CTRL&=~SysTick_CTRL_ENABLE_Msk;	//关闭计数器
+ 104              		.loc 1 24 0
+ 105 0024 044B     		ldr	r3, .L7+4
+ 106 0026 1A68     		ldr	r2, [r3]
+ 107 0028 22F00102 		bic	r2, r2, #1
+ 108 002c 1A60     		str	r2, [r3]
+  25:./module/src/delay.c **** 	SysTick->VAL =0X00;      					 //清空计数器	 
+ 109              		.loc 1 25 0
+ 110 002e 0022     		movs	r2, #0
+ 111 0030 9A60     		str	r2, [r3, #8]
+ 112 0032 7047     		bx	lr
+ 113              	.L8:
+ 114              		.align	2
+ 115              	.L7:
+ 116 0034 00000000 		.word	.LANCHOR0
+ 117 0038 10E000E0 		.word	-536813552
+ 118              		.cfi_endproc
+ 119              	.LFE30:
+ 121              		.section	.text.DelayMs,"ax",%progbits
+ 122              		.align	2
+ 123              		.global	DelayMs
+ 124              		.thumb
+ 125              		.thumb_func
+ 127              	DelayMs:
+ 128              	.LFB31:
+  26:./module/src/delay.c **** }
+  27:./module/src/delay.c **** //延时nms
+  28:./module/src/delay.c **** //注意nms的范围
+  29:./module/src/delay.c **** //SysTick->LOAD为24位寄存器,所以,最大延时为:
+  30:./module/src/delay.c **** //nms<=0xffffff*8*1000/SYSCLK
+  31:./module/src/delay.c **** //SYSCLK单位为Hz,nms单位为ms
+  32:./module/src/delay.c **** //对72M条件下,nms<=1864 
+  33:./module/src/delay.c **** void DelayMs(u16 nms)
+  34:./module/src/delay.c **** {	 		  	  
+ 129              		.loc 1 34 0
+ 130              		.cfi_startproc
+ 131              		@ args = 0, pretend = 0, frame = 0
+ 132              		@ frame_needed = 0, uses_anonymous_args = 0
+ 133              		@ link register save eliminated.
+ 134              	.LVL5:
+  35:./module/src/delay.c **** 	u32 temp;		   
+  36:./module/src/delay.c **** 	SysTick->LOAD=(u32)nms*fac_ms;				//时间加载(SysTick->LOAD为24bit)
+ 135              		.loc 1 36 0
+ 136 0000 0C4B     		ldr	r3, .L11
+ 137 0002 1B88     		ldrh	r3, [r3]
+ 138 0004 00FB03F0 		mul	r0, r0, r3
+ 139              	.LVL6:
+ 140 0008 0B4B     		ldr	r3, .L11+4
+ARM GAS  /tmp/ccDMsinx.s 			page 4
+
+
+ 141 000a 5860     		str	r0, [r3, #4]
+  37:./module/src/delay.c **** 	SysTick->VAL =0x00;							//清空计数器
+ 142              		.loc 1 37 0
+ 143 000c 0022     		movs	r2, #0
+ 144 000e 9A60     		str	r2, [r3, #8]
+  38:./module/src/delay.c **** 	SysTick->CTRL|=SysTick_CTRL_ENABLE_Msk ;	//开始倒数  
+ 145              		.loc 1 38 0
+ 146 0010 1A68     		ldr	r2, [r3]
+ 147 0012 42F00102 		orr	r2, r2, #1
+ 148 0016 1A60     		str	r2, [r3]
+ 149              	.L10:
+  39:./module/src/delay.c **** 	do
+  40:./module/src/delay.c **** 	{
+  41:./module/src/delay.c **** 		temp=SysTick->CTRL;
+ 150              		.loc 1 41 0 discriminator 1
+ 151 0018 074B     		ldr	r3, .L11+4
+ 152 001a 1B68     		ldr	r3, [r3]
+ 153              	.LVL7:
+  42:./module/src/delay.c **** 	}while((temp&0x01)&&!(temp&(1<<16)));		//等待时间到达   
+ 154              		.loc 1 42 0 discriminator 1
+ 155 001c 03F00113 		and	r3, r3, #65537
+ 156              	.LVL8:
+ 157 0020 012B     		cmp	r3, #1
+ 158 0022 F9D0     		beq	.L10
+  43:./module/src/delay.c **** 	SysTick->CTRL&=~SysTick_CTRL_ENABLE_Msk;	//关闭计数器
+ 159              		.loc 1 43 0
+ 160 0024 044B     		ldr	r3, .L11+4
+ 161 0026 1A68     		ldr	r2, [r3]
+ 162 0028 22F00102 		bic	r2, r2, #1
+ 163 002c 1A60     		str	r2, [r3]
+  44:./module/src/delay.c **** 	SysTick->VAL =0X00;       					//清空计数器	  	    
+ 164              		.loc 1 44 0
+ 165 002e 0022     		movs	r2, #0
+ 166 0030 9A60     		str	r2, [r3, #8]
+ 167 0032 7047     		bx	lr
+ 168              	.L12:
+ 169              		.align	2
+ 170              	.L11:
+ 171 0034 00000000 		.word	.LANCHOR1
+ 172 0038 10E000E0 		.word	-536813552
+ 173              		.cfi_endproc
+ 174              	.LFE31:
+ 176              		.section	.bss.fac_us,"aw",%nobits
+ 177              		.set	.LANCHOR0,. + 0
+ 180              	fac_us:
+ 181 0000 00       		.space	1
+ 182              		.section	.bss.fac_ms,"aw",%nobits
+ 183              		.align	1
+ 184              		.set	.LANCHOR1,. + 0
+ 187              	fac_ms:
+ 188 0000 0000     		.space	2
+ 189              		.text
+ 190              	.Letext0:
+ 191              		.file 2 "/opt/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/machine/_default_types.h"
+ 192              		.file 3 "/opt/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/sys/_stdint.h"
+ 193              		.file 4 "cmsis/core_cm3.h"
+ 194              		.file 5 "cmsis/stm32f10x.h"
+ARM GAS  /tmp/ccDMsinx.s 			page 5
+
+
+ 195              		.file 6 "cmsis/system_stm32f10x.h"
+ 196              		.file 7 "libraries/inc/misc.h"
+ARM GAS  /tmp/ccDMsinx.s 			page 6
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 delay.c
+     /tmp/ccDMsinx.s:20     .text.Delay_Init:00000000 $t
+     /tmp/ccDMsinx.s:25     .text.Delay_Init:00000000 Delay_Init
+     /tmp/ccDMsinx.s:59     .text.Delay_Init:0000002c $d
+     /tmp/ccDMsinx.s:67     .text.DelayUs:00000000 $t
+     /tmp/ccDMsinx.s:72     .text.DelayUs:00000000 DelayUs
+     /tmp/ccDMsinx.s:116    .text.DelayUs:00000034 $d
+     /tmp/ccDMsinx.s:122    .text.DelayMs:00000000 $t
+     /tmp/ccDMsinx.s:127    .text.DelayMs:00000000 DelayMs
+     /tmp/ccDMsinx.s:171    .text.DelayMs:00000034 $d
+     /tmp/ccDMsinx.s:180    .bss.fac_us:00000000 fac_us
+     /tmp/ccDMsinx.s:181    .bss.fac_us:00000000 $d
+     /tmp/ccDMsinx.s:183    .bss.fac_ms:00000000 $d
+     /tmp/ccDMsinx.s:187    .bss.fac_ms:00000000 fac_ms
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+SysTick_CLKSourceConfig
+SystemCoreClock

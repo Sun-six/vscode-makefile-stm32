@@ -1,0 +1,416 @@
+ARM GAS  /tmp/ccjkuxuy.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"spi.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.SPI2_SetSpeed,"ax",%progbits
+  20              		.align	2
+  21              		.global	SPI2_SetSpeed
+  22              		.thumb
+  23              		.thumb_func
+  25              	SPI2_SetSpeed:
+  26              	.LFB30:
+  27              		.file 1 "./module/src/spi.c"
+   1:./module/src/spi.c **** #include "spi.h"
+   2:./module/src/spi.c **** //ÒÔÏÂÊÇSPIÄ£¿éµÄ³õÊ¼»¯´úÂë£¬ÅäÖÃ³ÉÖ÷»úÄ£Ê½£¬·ÃÎÊSD Card/W25Q64/NRF24L01						  
+   3:./module/src/spi.c **** //SPI¿Ú³õÊ¼»¯
+   4:./module/src/spi.c **** //ÕâÀïÕëÊÇ¶ÔSPI2µÄ³õÊ¼»¯
+   5:./module/src/spi.c **** 
+   6:./module/src/spi.c **** 
+   7:./module/src/spi.c **** 
+   8:./module/src/spi.c **** void SPI2_Init(void)
+   9:./module/src/spi.c **** {
+  10:./module/src/spi.c ****  	GPIO_InitTypeDef GPIO_InitStructure;
+  11:./module/src/spi.c ****   	SPI_InitTypeDef  SPI_InitStructure;
+  12:./module/src/spi.c **** 
+  13:./module/src/spi.c **** 	RCC_APB2PeriphClockCmd(	RCC_APB2Periph_GPIOB, ENABLE );//PORTBÊ±ÖÓÊ¹ÄÜ 
+  14:./module/src/spi.c **** 	RCC_APB1PeriphClockCmd(	RCC_APB1Periph_SPI2,  ENABLE );//SPI2Ê±ÖÓÊ¹ÄÜ 	
+  15:./module/src/spi.c ****  
+  16:./module/src/spi.c **** 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
+  17:./module/src/spi.c **** 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;  //PB13/14/15¸´ÓÃÍÆÍìÊä³ö 
+  18:./module/src/spi.c **** 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  19:./module/src/spi.c **** 	GPIO_Init(GPIOB, &GPIO_InitStructure);//³õÊ¼»¯GPIOB
+  20:./module/src/spi.c **** 
+  21:./module/src/spi.c ****  	GPIO_SetBits(GPIOB,GPIO_Pin_13|GPIO_Pin_14|GPIO_Pin_15);  //PB13/14/15ÉÏÀ­
+  22:./module/src/spi.c **** 
+  23:./module/src/spi.c **** 	SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;  //ÉèÖÃSPIµ¥Ïò»òÕßË«ÏòµÄÊý¾ÝÄ£Ê
+  24:./module/src/spi.c **** 	SPI_InitStructure.SPI_Mode = SPI_Mode_Master;		//ÉèÖÃSPI¹¤×÷Ä£Ê½:ÉèÖÃÎªÖ÷SPI
+  25:./module/src/spi.c **** 	SPI_InitStructure.SPI_DataSize = SPI_DataSize_8b;		//ÉèÖÃSPIµÄÊý¾Ý´óÐ¡:SPI·¢ËÍ½ÓÊÕ8Î»Ö¡½á¹¹
+  26:./module/src/spi.c **** 	SPI_InitStructure.SPI_CPOL = SPI_CPOL_High;		//´®ÐÐÍ¬²½Ê±ÖÓµÄ¿ÕÏÐ×´Ì¬Îª¸ßµçÆ½
+  27:./module/src/spi.c **** 	SPI_InitStructure.SPI_CPHA = SPI_CPHA_2Edge;	//´®ÐÐÍ¬²½Ê±ÖÓµÄµÚ¶þ¸öÌø±äÑØ£¨ÉÏÉý»òÏÂ½µ£©Êý¾Ý±»²ÉÑù
+  28:./module/src/spi.c **** 	SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;		//NSSÐÅºÅÓÉÓ²¼þ£¨NSS¹Ü½Å£©»¹ÊÇÈí¼þ£¨Ê¹ÓÃSSIÎ»£©¹ÜÀí:ÄÚ²
+  29:./module/src/spi.c **** 	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_256;		//¶¨Òå²¨ÌØÂÊÔ¤·ÖÆµµÄÖµ:²¨ÌØÂ
+  30:./module/src/spi.c **** 	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;	//Ö¸¶¨Êý¾Ý´«Êä´ÓMSBÎ»»¹ÊÇLSBÎ»¿ªÊ¼:Êý¾Ý´«Êä´ÓMS
+  31:./module/src/spi.c **** 	SPI_InitStructure.SPI_CRCPolynomial = 7;	//CRCÖµ¼ÆËãµÄ¶àÏîÊ½
+ARM GAS  /tmp/ccjkuxuy.s 			page 2
+
+
+  32:./module/src/spi.c **** 	SPI_Init(SPI2, &SPI_InitStructure);  //¸ù¾ÝSPI_InitStructÖÐÖ¸¶¨µÄ²ÎÊý³õÊ¼»¯ÍâÉèSPIx¼Ä´æÆ÷
+  33:./module/src/spi.c ****  
+  34:./module/src/spi.c **** 	SPI_Cmd(SPI2, ENABLE); //Ê¹ÄÜSPIÍâÉè
+  35:./module/src/spi.c **** 	
+  36:./module/src/spi.c **** 	SPI2_ReadWriteByte(0xff);//Æô¶¯´«Êä		 
+  37:./module/src/spi.c ****  
+  38:./module/src/spi.c **** 
+  39:./module/src/spi.c **** }   
+  40:./module/src/spi.c **** //SPI ËÙ¶ÈÉèÖÃº¯Êý
+  41:./module/src/spi.c **** //SpeedSet:
+  42:./module/src/spi.c **** //SPI_BaudRatePrescaler_2   2·ÖÆµ   
+  43:./module/src/spi.c **** //SPI_BaudRatePrescaler_8   8·ÖÆµ   
+  44:./module/src/spi.c **** //SPI_BaudRatePrescaler_16  16·ÖÆµ  
+  45:./module/src/spi.c **** //SPI_BaudRatePrescaler_256 256·ÖÆµ 
+  46:./module/src/spi.c ****   
+  47:./module/src/spi.c **** void SPI2_SetSpeed(u8 SPI_BaudRatePrescaler)
+  48:./module/src/spi.c **** {
+  28              		.loc 1 48 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              	.LVL0:
+  33 0000 08B5     		push	{r3, lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 8
+  36              		.cfi_offset 3, -8
+  37              		.cfi_offset 14, -4
+  49:./module/src/spi.c ****   	assert_param(IS_SPI_BAUDRATE_PRESCALER(SPI_BaudRatePrescaler));
+  50:./module/src/spi.c **** 	SPI2->CR1&=0XFFC7;
+  38              		.loc 1 50 0
+  39 0002 084A     		ldr	r2, .L3
+  40 0004 1388     		ldrh	r3, [r2]
+  41 0006 9BB2     		uxth	r3, r3
+  42 0008 23F03803 		bic	r3, r3, #56
+  43 000c 9BB2     		uxth	r3, r3
+  44 000e 1380     		strh	r3, [r2]	@ movhi
+  51:./module/src/spi.c **** 	SPI2->CR1|=SPI_BaudRatePrescaler;	//ÉèÖÃSPI2ËÙ¶È 
+  45              		.loc 1 51 0
+  46 0010 1388     		ldrh	r3, [r2]
+  47 0012 9BB2     		uxth	r3, r3
+  48 0014 1843     		orrs	r0, r0, r3
+  49              	.LVL1:
+  50 0016 1080     		strh	r0, [r2]	@ movhi
+  52:./module/src/spi.c **** 	SPI_Cmd(SPI2,ENABLE); 
+  51              		.loc 1 52 0
+  52 0018 0121     		movs	r1, #1
+  53 001a 1046     		mov	r0, r2
+  54 001c FFF7FEFF 		bl	SPI_Cmd
+  55              	.LVL2:
+  56 0020 08BD     		pop	{r3, pc}
+  57              	.L4:
+  58 0022 00BF     		.align	2
+  59              	.L3:
+  60 0024 00380040 		.word	1073756160
+  61              		.cfi_endproc
+  62              	.LFE30:
+  64              		.section	.text.SPI2_ReadWriteByte,"ax",%progbits
+ARM GAS  /tmp/ccjkuxuy.s 			page 3
+
+
+  65              		.align	2
+  66              		.global	SPI2_ReadWriteByte
+  67              		.thumb
+  68              		.thumb_func
+  70              	SPI2_ReadWriteByte:
+  71              	.LFB31:
+  53:./module/src/spi.c **** 
+  54:./module/src/spi.c **** } 
+  55:./module/src/spi.c **** 
+  56:./module/src/spi.c **** //SPIx ¶ÁÐ´Ò»¸ö×Ö½Ú
+  57:./module/src/spi.c **** //TxData:ÒªÐ´ÈëµÄ×Ö½Ú
+  58:./module/src/spi.c **** //·µ»ØÖµ:¶ÁÈ¡µ½µÄ×Ö½Ú
+  59:./module/src/spi.c **** u8 SPI2_ReadWriteByte(u8 TxData)
+  60:./module/src/spi.c **** {		
+  72              		.loc 1 60 0
+  73              		.cfi_startproc
+  74              		@ args = 0, pretend = 0, frame = 0
+  75              		@ frame_needed = 0, uses_anonymous_args = 0
+  76              	.LVL3:
+  77 0000 38B5     		push	{r3, r4, r5, lr}
+  78              	.LCFI1:
+  79              		.cfi_def_cfa_offset 16
+  80              		.cfi_offset 3, -16
+  81              		.cfi_offset 4, -12
+  82              		.cfi_offset 5, -8
+  83              		.cfi_offset 14, -4
+  84 0002 0546     		mov	r5, r0
+  85              	.LVL4:
+  61:./module/src/spi.c **** 	u8 retry=0;				 	
+  86              		.loc 1 61 0
+  87 0004 0024     		movs	r4, #0
+  62:./module/src/spi.c **** 	while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE) == RESET) //¼ì²éÖ¸¶¨µÄSPI±êÖ¾Î»ÉèÖÃÓë·ñ:·¢ËÍ»
+  88              		.loc 1 62 0
+  89 0006 03E0     		b	.L6
+  90              	.LVL5:
+  91              	.L8:
+  63:./module/src/spi.c **** 		{
+  64:./module/src/spi.c **** 		retry++;
+  92              		.loc 1 64 0
+  93 0008 0134     		adds	r4, r4, #1
+  94              	.LVL6:
+  95 000a E4B2     		uxtb	r4, r4
+  96              	.LVL7:
+  65:./module/src/spi.c **** 		if(retry>200)return 0;
+  97              		.loc 1 65 0
+  98 000c C82C     		cmp	r4, #200
+  99 000e 1AD8     		bhi	.L11
+ 100              	.LVL8:
+ 101              	.L6:
+  62:./module/src/spi.c **** 	while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE) == RESET) //¼ì²éÖ¸¶¨µÄSPI±êÖ¾Î»ÉèÖÃÓë·ñ:·¢ËÍ»
+ 102              		.loc 1 62 0
+ 103 0010 0221     		movs	r1, #2
+ 104 0012 0F48     		ldr	r0, .L14
+ 105 0014 FFF7FEFF 		bl	SPI_I2S_GetFlagStatus
+ 106              	.LVL9:
+ 107 0018 0028     		cmp	r0, #0
+ 108 001a F5D0     		beq	.L8
+ARM GAS  /tmp/ccjkuxuy.s 			page 4
+
+
+  66:./module/src/spi.c **** 		}			  
+  67:./module/src/spi.c **** 	SPI_I2S_SendData(SPI2, TxData); //Í¨¹ýÍâÉèSPIx·¢ËÍÒ»¸öÊý¾Ý
+ 109              		.loc 1 67 0
+ 110 001c 2946     		mov	r1, r5
+ 111 001e 0C48     		ldr	r0, .L14
+ 112 0020 FFF7FEFF 		bl	SPI_I2S_SendData
+ 113              	.LVL10:
+  68:./module/src/spi.c **** 	retry=0;
+ 114              		.loc 1 68 0
+ 115 0024 0024     		movs	r4, #0
+  69:./module/src/spi.c **** 
+  70:./module/src/spi.c **** 	while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE) == RESET)//¼ì²éÖ¸¶¨µÄSPI±êÖ¾Î»ÉèÖÃÓë·ñ:½ÓÊÜ»
+ 116              		.loc 1 70 0
+ 117 0026 03E0     		b	.L9
+ 118              	.LVL11:
+ 119              	.L10:
+  71:./module/src/spi.c **** 		{
+  72:./module/src/spi.c **** 		retry++;
+ 120              		.loc 1 72 0
+ 121 0028 0134     		adds	r4, r4, #1
+ 122              	.LVL12:
+ 123 002a E4B2     		uxtb	r4, r4
+ 124              	.LVL13:
+  73:./module/src/spi.c **** 		if(retry>200)return 0;
+ 125              		.loc 1 73 0
+ 126 002c C82C     		cmp	r4, #200
+ 127 002e 0CD8     		bhi	.L12
+ 128              	.LVL14:
+ 129              	.L9:
+  70:./module/src/spi.c **** 		{
+ 130              		.loc 1 70 0
+ 131 0030 0121     		movs	r1, #1
+ 132 0032 0748     		ldr	r0, .L14
+ 133 0034 FFF7FEFF 		bl	SPI_I2S_GetFlagStatus
+ 134              	.LVL15:
+ 135 0038 0028     		cmp	r0, #0
+ 136 003a F5D0     		beq	.L10
+  74:./module/src/spi.c **** 		}	  						    
+  75:./module/src/spi.c **** 	return SPI_I2S_ReceiveData(SPI2); //·µ»ØÍ¨¹ýSPIx×î½ü½ÓÊÕµÄÊý¾Ý					    
+ 137              		.loc 1 75 0
+ 138 003c 0448     		ldr	r0, .L14
+ 139 003e FFF7FEFF 		bl	SPI_I2S_ReceiveData
+ 140              	.LVL16:
+ 141 0042 C0B2     		uxtb	r0, r0
+ 142 0044 38BD     		pop	{r3, r4, r5, pc}
+ 143              	.LVL17:
+ 144              	.L11:
+  65:./module/src/spi.c **** 		}			  
+ 145              		.loc 1 65 0
+ 146 0046 0020     		movs	r0, #0
+ 147 0048 38BD     		pop	{r3, r4, r5, pc}
+ 148              	.LVL18:
+ 149              	.L12:
+  73:./module/src/spi.c **** 		}	  						    
+ 150              		.loc 1 73 0
+ 151 004a 0020     		movs	r0, #0
+  76:./module/src/spi.c **** }
+ARM GAS  /tmp/ccjkuxuy.s 			page 5
+
+
+ 152              		.loc 1 76 0
+ 153 004c 38BD     		pop	{r3, r4, r5, pc}
+ 154              	.LVL19:
+ 155              	.L15:
+ 156 004e 00BF     		.align	2
+ 157              	.L14:
+ 158 0050 00380040 		.word	1073756160
+ 159              		.cfi_endproc
+ 160              	.LFE31:
+ 162              		.section	.text.SPI2_Init,"ax",%progbits
+ 163              		.align	2
+ 164              		.global	SPI2_Init
+ 165              		.thumb
+ 166              		.thumb_func
+ 168              	SPI2_Init:
+ 169              	.LFB29:
+   9:./module/src/spi.c ****  	GPIO_InitTypeDef GPIO_InitStructure;
+ 170              		.loc 1 9 0
+ 171              		.cfi_startproc
+ 172              		@ args = 0, pretend = 0, frame = 24
+ 173              		@ frame_needed = 0, uses_anonymous_args = 0
+ 174 0000 30B5     		push	{r4, r5, lr}
+ 175              	.LCFI2:
+ 176              		.cfi_def_cfa_offset 12
+ 177              		.cfi_offset 4, -12
+ 178              		.cfi_offset 5, -8
+ 179              		.cfi_offset 14, -4
+ 180 0002 87B0     		sub	sp, sp, #28
+ 181              	.LCFI3:
+ 182              		.cfi_def_cfa_offset 40
+  13:./module/src/spi.c **** 	RCC_APB1PeriphClockCmd(	RCC_APB1Periph_SPI2,  ENABLE );//SPI2Ê±ÖÓÊ¹ÄÜ 	
+ 183              		.loc 1 13 0
+ 184 0004 0121     		movs	r1, #1
+ 185 0006 0820     		movs	r0, #8
+ 186 0008 FFF7FEFF 		bl	RCC_APB2PeriphClockCmd
+ 187              	.LVL20:
+  14:./module/src/spi.c ****  
+ 188              		.loc 1 14 0
+ 189 000c 0121     		movs	r1, #1
+ 190 000e 4FF48040 		mov	r0, #16384
+ 191 0012 FFF7FEFF 		bl	RCC_APB1PeriphClockCmd
+ 192              	.LVL21:
+  16:./module/src/spi.c **** 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;  //PB13/14/15¸´ÓÃÍÆÍìÊä³ö 
+ 193              		.loc 1 16 0
+ 194 0016 4FF46045 		mov	r5, #57344
+ 195 001a ADF81450 		strh	r5, [sp, #20]	@ movhi
+  17:./module/src/spi.c **** 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+ 196              		.loc 1 17 0
+ 197 001e 1823     		movs	r3, #24
+ 198 0020 8DF81730 		strb	r3, [sp, #23]
+  18:./module/src/spi.c **** 	GPIO_Init(GPIOB, &GPIO_InitStructure);//³õÊ¼»¯GPIOB
+ 199              		.loc 1 18 0
+ 200 0024 0323     		movs	r3, #3
+ 201 0026 8DF81630 		strb	r3, [sp, #22]
+  19:./module/src/spi.c **** 
+ 202              		.loc 1 19 0
+ 203 002a 194C     		ldr	r4, .L18
+ARM GAS  /tmp/ccjkuxuy.s 			page 6
+
+
+ 204 002c 05A9     		add	r1, sp, #20
+ 205 002e 2046     		mov	r0, r4
+ 206 0030 FFF7FEFF 		bl	GPIO_Init
+ 207              	.LVL22:
+  21:./module/src/spi.c **** 
+ 208              		.loc 1 21 0
+ 209 0034 2946     		mov	r1, r5
+ 210 0036 2046     		mov	r0, r4
+ 211 0038 FFF7FEFF 		bl	GPIO_SetBits
+ 212              	.LVL23:
+  23:./module/src/spi.c **** 	SPI_InitStructure.SPI_Mode = SPI_Mode_Master;		//ÉèÖÃSPI¹¤×÷Ä£Ê½:ÉèÖÃÎªÖ÷SPI
+ 213              		.loc 1 23 0
+ 214 003c 0023     		movs	r3, #0
+ 215 003e ADF80030 		strh	r3, [sp]	@ movhi
+  24:./module/src/spi.c **** 	SPI_InitStructure.SPI_DataSize = SPI_DataSize_8b;		//ÉèÖÃSPIµÄÊý¾Ý´óÐ¡:SPI·¢ËÍ½ÓÊÕ8Î»Ö¡½á¹¹
+ 216              		.loc 1 24 0
+ 217 0042 4FF48272 		mov	r2, #260
+ 218 0046 ADF80220 		strh	r2, [sp, #2]	@ movhi
+  25:./module/src/spi.c **** 	SPI_InitStructure.SPI_CPOL = SPI_CPOL_High;		//´®ÐÐÍ¬²½Ê±ÖÓµÄ¿ÕÏÐ×´Ì¬Îª¸ßµçÆ½
+ 219              		.loc 1 25 0
+ 220 004a ADF80430 		strh	r3, [sp, #4]	@ movhi
+  26:./module/src/spi.c **** 	SPI_InitStructure.SPI_CPHA = SPI_CPHA_2Edge;	//´®ÐÐÍ¬²½Ê±ÖÓµÄµÚ¶þ¸öÌø±äÑØ£¨ÉÏÉý»òÏÂ½µ£©Êý¾Ý±»²ÉÑù
+ 221              		.loc 1 26 0
+ 222 004e 0222     		movs	r2, #2
+ 223 0050 ADF80620 		strh	r2, [sp, #6]	@ movhi
+  27:./module/src/spi.c **** 	SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;		//NSSÐÅºÅÓÉÓ²¼þ£¨NSS¹Ü½Å£©»¹ÊÇÈí¼þ£¨Ê¹ÓÃSSIÎ»£©¹ÜÀí:ÄÚ²
+ 224              		.loc 1 27 0
+ 225 0054 0125     		movs	r5, #1
+ 226 0056 ADF80850 		strh	r5, [sp, #8]	@ movhi
+  28:./module/src/spi.c **** 	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_256;		//¶¨Òå²¨ÌØÂÊÔ¤·ÖÆµµÄÖµ:²¨ÌØÂ
+ 227              		.loc 1 28 0
+ 228 005a 4FF40072 		mov	r2, #512
+ 229 005e ADF80A20 		strh	r2, [sp, #10]	@ movhi
+  29:./module/src/spi.c **** 	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;	//Ö¸¶¨Êý¾Ý´«Êä´ÓMSBÎ»»¹ÊÇLSBÎ»¿ªÊ¼:Êý¾Ý´«Êä´ÓMS
+ 230              		.loc 1 29 0
+ 231 0062 3822     		movs	r2, #56
+ 232 0064 ADF80C20 		strh	r2, [sp, #12]	@ movhi
+  30:./module/src/spi.c **** 	SPI_InitStructure.SPI_CRCPolynomial = 7;	//CRCÖµ¼ÆËãµÄ¶àÏîÊ½
+ 233              		.loc 1 30 0
+ 234 0068 ADF80E30 		strh	r3, [sp, #14]	@ movhi
+  31:./module/src/spi.c **** 	SPI_Init(SPI2, &SPI_InitStructure);  //¸ù¾ÝSPI_InitStructÖÐÖ¸¶¨µÄ²ÎÊý³õÊ¼»¯ÍâÉèSPIx¼Ä´æÆ÷
+ 235              		.loc 1 31 0
+ 236 006c 0723     		movs	r3, #7
+ 237 006e ADF81030 		strh	r3, [sp, #16]	@ movhi
+  32:./module/src/spi.c ****  
+ 238              		.loc 1 32 0
+ 239 0072 A4F55444 		sub	r4, r4, #54272
+ 240 0076 6946     		mov	r1, sp
+ 241 0078 2046     		mov	r0, r4
+ 242 007a FFF7FEFF 		bl	SPI_Init
+ 243              	.LVL24:
+  34:./module/src/spi.c **** 	
+ 244              		.loc 1 34 0
+ 245 007e 2946     		mov	r1, r5
+ 246 0080 2046     		mov	r0, r4
+ 247 0082 FFF7FEFF 		bl	SPI_Cmd
+ 248              	.LVL25:
+ARM GAS  /tmp/ccjkuxuy.s 			page 7
+
+
+  36:./module/src/spi.c ****  
+ 249              		.loc 1 36 0
+ 250 0086 FF20     		movs	r0, #255
+ 251 0088 FFF7FEFF 		bl	SPI2_ReadWriteByte
+ 252              	.LVL26:
+  39:./module/src/spi.c **** //SPI ËÙ¶ÈÉèÖÃº¯Êý
+ 253              		.loc 1 39 0
+ 254 008c 07B0     		add	sp, sp, #28
+ 255              	.LCFI4:
+ 256              		.cfi_def_cfa_offset 12
+ 257              		@ sp needed
+ 258 008e 30BD     		pop	{r4, r5, pc}
+ 259              	.L19:
+ 260              		.align	2
+ 261              	.L18:
+ 262 0090 000C0140 		.word	1073810432
+ 263              		.cfi_endproc
+ 264              	.LFE29:
+ 266              		.text
+ 267              	.Letext0:
+ 268              		.file 2 "/opt/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/machine/_default_types.h"
+ 269              		.file 3 "/opt/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/sys/_stdint.h"
+ 270              		.file 4 "cmsis/stm32f10x.h"
+ 271              		.file 5 "libraries/inc/stm32f10x_gpio.h"
+ 272              		.file 6 "libraries/inc/stm32f10x_spi.h"
+ 273              		.file 7 "libraries/inc/stm32f10x_rcc.h"
+ 274              		.file 8 "cmsis/core_cm3.h"
+ARM GAS  /tmp/ccjkuxuy.s 			page 8
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 spi.c
+     /tmp/ccjkuxuy.s:20     .text.SPI2_SetSpeed:00000000 $t
+     /tmp/ccjkuxuy.s:25     .text.SPI2_SetSpeed:00000000 SPI2_SetSpeed
+     /tmp/ccjkuxuy.s:60     .text.SPI2_SetSpeed:00000024 $d
+     /tmp/ccjkuxuy.s:65     .text.SPI2_ReadWriteByte:00000000 $t
+     /tmp/ccjkuxuy.s:70     .text.SPI2_ReadWriteByte:00000000 SPI2_ReadWriteByte
+     /tmp/ccjkuxuy.s:158    .text.SPI2_ReadWriteByte:00000050 $d
+     /tmp/ccjkuxuy.s:163    .text.SPI2_Init:00000000 $t
+     /tmp/ccjkuxuy.s:168    .text.SPI2_Init:00000000 SPI2_Init
+     /tmp/ccjkuxuy.s:262    .text.SPI2_Init:00000090 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+SPI_Cmd
+SPI_I2S_GetFlagStatus
+SPI_I2S_SendData
+SPI_I2S_ReceiveData
+RCC_APB2PeriphClockCmd
+RCC_APB1PeriphClockCmd
+GPIO_Init
+GPIO_SetBits
+SPI_Init

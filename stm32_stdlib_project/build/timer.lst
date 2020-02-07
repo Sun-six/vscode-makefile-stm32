@@ -1,0 +1,366 @@
+ARM GAS  /tmp/cc6zk9fg.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"timer.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.TIMx_Current_Config,"ax",%progbits
+  20              		.align	2
+  21              		.global	TIMx_Current_Config
+  22              		.thumb
+  23              		.thumb_func
+  25              	TIMx_Current_Config:
+  26              	.LFB30:
+  27              		.file 1 "./module/src/timer.c"
+   1:./module/src/timer.c **** #include "timer.h"
+   2:./module/src/timer.c **** 
+   3:./module/src/timer.c **** /**
+   4:./module/src/timer.c **** 函数名称：基本定时器配置
+   5:./module/src/timer.c **** 函数功能：配置TIM 2 3 4的函数
+   6:./module/src/timer.c **** */
+   7:./module/src/timer.c **** void TIMx_Current_Config(TIM_TypeDef* TIMx,u16 TIM_Period,u16 TIM_Prescaler)
+   8:./module/src/timer.c **** {
+  28              		.loc 1 8 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 16
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              	.LVL0:
+  33 0000 70B5     		push	{r4, r5, r6, lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 16
+  36              		.cfi_offset 4, -16
+  37              		.cfi_offset 5, -12
+  38              		.cfi_offset 6, -8
+  39              		.cfi_offset 14, -4
+  40 0002 84B0     		sub	sp, sp, #16
+  41              	.LCFI1:
+  42              		.cfi_def_cfa_offset 32
+  43 0004 0446     		mov	r4, r0
+  44 0006 0E46     		mov	r6, r1
+  45 0008 1546     		mov	r5, r2
+   9:./module/src/timer.c ****     TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
+  10:./module/src/timer.c **** 	if(TIMx==TIM2)
+  46              		.loc 1 10 0
+  47 000a B0F1804F 		cmp	r0, #1073741824
+  48 000e 07D1     		bne	.L2
+ARM GAS  /tmp/cc6zk9fg.s 			page 2
+
+
+  11:./module/src/timer.c ****     {
+  12:./module/src/timer.c **** 		RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2 , ENABLE);
+  49              		.loc 1 12 0
+  50 0010 0121     		movs	r1, #1
+  51              	.LVL1:
+  52 0012 0846     		mov	r0, r1
+  53              	.LVL2:
+  54 0014 FFF7FEFF 		bl	RCC_APB1PeriphClockCmd
+  55              	.LVL3:
+  13:./module/src/timer.c **** 		TIM_DeInit(TIM2);
+  56              		.loc 1 13 0
+  57 0018 4FF08040 		mov	r0, #1073741824
+  58 001c FFF7FEFF 		bl	TIM_DeInit
+  59              	.LVL4:
+  60              	.L2:
+  14:./module/src/timer.c **** 	}
+  15:./module/src/timer.c **** 	if(TIMx==TIM3)
+  61              		.loc 1 15 0
+  62 0020 154B     		ldr	r3, .L8
+  63 0022 9C42     		cmp	r4, r3
+  64 0024 06D1     		bne	.L3
+  16:./module/src/timer.c ****     {
+  17:./module/src/timer.c **** 		RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3 , ENABLE);
+  65              		.loc 1 17 0
+  66 0026 0121     		movs	r1, #1
+  67 0028 0220     		movs	r0, #2
+  68 002a FFF7FEFF 		bl	RCC_APB1PeriphClockCmd
+  69              	.LVL5:
+  18:./module/src/timer.c **** 		TIM_DeInit(TIM3);
+  70              		.loc 1 18 0
+  71 002e 1248     		ldr	r0, .L8
+  72 0030 FFF7FEFF 		bl	TIM_DeInit
+  73              	.LVL6:
+  74              	.L3:
+  19:./module/src/timer.c **** 	}
+  20:./module/src/timer.c **** 	if(TIMx==TIM4)
+  75              		.loc 1 20 0
+  76 0034 114B     		ldr	r3, .L8+4
+  77 0036 9C42     		cmp	r4, r3
+  78 0038 06D1     		bne	.L4
+  21:./module/src/timer.c ****     {
+  22:./module/src/timer.c **** 		RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4 , ENABLE);
+  79              		.loc 1 22 0
+  80 003a 0121     		movs	r1, #1
+  81 003c 0420     		movs	r0, #4
+  82 003e FFF7FEFF 		bl	RCC_APB1PeriphClockCmd
+  83              	.LVL7:
+  23:./module/src/timer.c **** 		TIM_DeInit(TIM4);
+  84              		.loc 1 23 0
+  85 0042 0E48     		ldr	r0, .L8+4
+  86 0044 FFF7FEFF 		bl	TIM_DeInit
+  87              	.LVL8:
+  88              	.L4:
+  24:./module/src/timer.c **** 	}    
+  25:./module/src/timer.c **** 	if(IS_TIM_LIST10_PERIPH(TIMx))
+  89              		.loc 1 25 0
+  90 0048 B4F1804F 		cmp	r4, #1073741824
+ARM GAS  /tmp/cc6zk9fg.s 			page 3
+
+
+  91 004c 06D0     		beq	.L5
+  92              		.loc 1 25 0 is_stmt 0 discriminator 1
+  93 004e 0A4B     		ldr	r3, .L8
+  94 0050 9C42     		cmp	r4, r3
+  95 0052 03D0     		beq	.L5
+  96              		.loc 1 25 0 discriminator 2
+  97 0054 03F58063 		add	r3, r3, #1024
+  98 0058 9C42     		cmp	r4, r3
+  99 005a 0BD1     		bne	.L1
+ 100              	.L5:
+  26:./module/src/timer.c **** 	{
+  27:./module/src/timer.c **** 		/*基本定时器配置*/
+  28:./module/src/timer.c **** 		TIM_TimeBaseStructure.TIM_Period=TIM_Period;	//自动重装载寄存器周期的值(计数值) 
+ 101              		.loc 1 28 0 is_stmt 1
+ 102 005c ADF80860 		strh	r6, [sp, #8]	@ movhi
+  29:./module/src/timer.c **** 		/* 累计 TIM_Period个频率后产生一个更新或者中断 */
+  30:./module/src/timer.c **** 		TIM_TimeBaseStructure.TIM_Prescaler= (TIM_Prescaler - 1);	//时钟预分频数 72M/72      
+ 103              		.loc 1 30 0
+ 104 0060 013D     		subs	r5, r5, #1
+ 105 0062 ADF80450 		strh	r5, [sp, #4]	@ movhi
+  31:./module/src/timer.c **** 		TIM_TimeBaseStructure.TIM_CounterMode=TIM_CounterMode_Up; //向上计数模式 
+ 106              		.loc 1 31 0
+ 107 0066 0023     		movs	r3, #0
+ 108 0068 ADF80630 		strh	r3, [sp, #6]	@ movhi
+  32:./module/src/timer.c **** 		TIM_TimeBaseInit(TIMx, &TIM_TimeBaseStructure);
+ 109              		.loc 1 32 0
+ 110 006c 01A9     		add	r1, sp, #4
+ 111 006e 2046     		mov	r0, r4
+ 112 0070 FFF7FEFF 		bl	TIM_TimeBaseInit
+ 113              	.LVL9:
+ 114              	.L1:
+  33:./module/src/timer.c **** 	}
+  34:./module/src/timer.c **** }
+ 115              		.loc 1 34 0
+ 116 0074 04B0     		add	sp, sp, #16
+ 117              	.LCFI2:
+ 118              		.cfi_def_cfa_offset 16
+ 119              		@ sp needed
+ 120 0076 70BD     		pop	{r4, r5, r6, pc}
+ 121              	.LVL10:
+ 122              	.L9:
+ 123              		.align	2
+ 124              	.L8:
+ 125 0078 00040040 		.word	1073742848
+ 126 007c 00080040 		.word	1073743872
+ 127              		.cfi_endproc
+ 128              	.LFE30:
+ 130              		.section	.text.TIMx_Current_NVIC_Config,"ax",%progbits
+ 131              		.align	2
+ 132              		.global	TIMx_Current_NVIC_Config
+ 133              		.thumb
+ 134              		.thumb_func
+ 136              	TIMx_Current_NVIC_Config:
+ 137              	.LFB31:
+  35:./module/src/timer.c **** void TIMx_Current_NVIC_Config(TIM_TypeDef* TIMx,uint32_t PreemptPriority, uint32_t SubPriority)
+  36:./module/src/timer.c **** {
+ 138              		.loc 1 36 0
+ARM GAS  /tmp/cc6zk9fg.s 			page 4
+
+
+ 139              		.cfi_startproc
+ 140              		@ args = 0, pretend = 0, frame = 0
+ 141              		@ frame_needed = 0, uses_anonymous_args = 0
+ 142              	.LVL11:
+ 143 0000 70B5     		push	{r4, r5, r6, lr}
+ 144              	.LCFI3:
+ 145              		.cfi_def_cfa_offset 16
+ 146              		.cfi_offset 4, -16
+ 147              		.cfi_offset 5, -12
+ 148              		.cfi_offset 6, -8
+ 149              		.cfi_offset 14, -4
+ 150 0002 0446     		mov	r4, r0
+ 151 0004 0D46     		mov	r5, r1
+ 152 0006 1646     		mov	r6, r2
+  37:./module/src/timer.c **** 	if(TIMx==TIM2)
+ 153              		.loc 1 37 0
+ 154 0008 B0F1804F 		cmp	r0, #1073741824
+ 155 000c 02D1     		bne	.L11
+  38:./module/src/timer.c **** 	STM32_NVIC_SetPriority(TIM2_IRQn,PreemptPriority,SubPriority);
+ 156              		.loc 1 38 0
+ 157 000e 1C20     		movs	r0, #28
+ 158              	.LVL12:
+ 159 0010 FFF7FEFF 		bl	STM32_NVIC_SetPriority
+ 160              	.LVL13:
+ 161              	.L11:
+  39:./module/src/timer.c **** 	if(TIMx==TIM2)
+ 162              		.loc 1 39 0
+ 163 0014 B4F1804F 		cmp	r4, #1073741824
+ 164 0018 04D1     		bne	.L12
+  40:./module/src/timer.c **** 	STM32_NVIC_SetPriority(TIM2_IRQn,PreemptPriority,SubPriority);
+ 165              		.loc 1 40 0
+ 166 001a 3246     		mov	r2, r6
+ 167 001c 2946     		mov	r1, r5
+ 168 001e 1C20     		movs	r0, #28
+ 169 0020 FFF7FEFF 		bl	STM32_NVIC_SetPriority
+ 170              	.LVL14:
+ 171              	.L12:
+  41:./module/src/timer.c **** 	if(TIMx==TIM2)
+ 172              		.loc 1 41 0
+ 173 0024 B4F1804F 		cmp	r4, #1073741824
+ 174 0028 04D1     		bne	.L13
+  42:./module/src/timer.c **** 	STM32_NVIC_SetPriority(TIM2_IRQn,PreemptPriority,SubPriority);
+ 175              		.loc 1 42 0
+ 176 002a 3246     		mov	r2, r6
+ 177 002c 2946     		mov	r1, r5
+ 178 002e 1C20     		movs	r0, #28
+ 179 0030 FFF7FEFF 		bl	STM32_NVIC_SetPriority
+ 180              	.LVL15:
+ 181              	.L13:
+  43:./module/src/timer.c **** 	if(IS_TIM_LIST10_PERIPH(TIMx))
+ 182              		.loc 1 43 0
+ 183 0034 B4F1804F 		cmp	r4, #1073741824
+ 184 0038 06D0     		beq	.L14
+ 185              		.loc 1 43 0 is_stmt 0 discriminator 1
+ 186 003a 094B     		ldr	r3, .L17
+ 187 003c 9C42     		cmp	r4, r3
+ 188 003e 03D0     		beq	.L14
+ARM GAS  /tmp/cc6zk9fg.s 			page 5
+
+
+ 189              		.loc 1 43 0 discriminator 2
+ 190 0040 03F58063 		add	r3, r3, #1024
+ 191 0044 9C42     		cmp	r4, r3
+ 192 0046 0AD1     		bne	.L10
+ 193              	.L14:
+  44:./module/src/timer.c **** 	{
+  45:./module/src/timer.c **** 		TIM_ClearFlag(TIM2, TIM_FLAG_Update);	// 清除溢出中断标志 
+ 194              		.loc 1 45 0 is_stmt 1
+ 195 0048 0121     		movs	r1, #1
+ 196 004a 4FF08040 		mov	r0, #1073741824
+ 197 004e FFF7FEFF 		bl	TIM_ClearFlag
+ 198              	.LVL16:
+  46:./module/src/timer.c **** 		TIM_ITConfig(TIM2,TIM_IT_Update,ENABLE);
+ 199              		.loc 1 46 0
+ 200 0052 0122     		movs	r2, #1
+ 201 0054 1146     		mov	r1, r2
+ 202 0056 4FF08040 		mov	r0, #1073741824
+ 203 005a FFF7FEFF 		bl	TIM_ITConfig
+ 204              	.LVL17:
+ 205              	.L10:
+ 206 005e 70BD     		pop	{r4, r5, r6, pc}
+ 207              	.LVL18:
+ 208              	.L18:
+ 209              		.align	2
+ 210              	.L17:
+ 211 0060 00040040 		.word	1073742848
+ 212              		.cfi_endproc
+ 213              	.LFE31:
+ 215              		.section	.text.TIM2_IRQHandler,"ax",%progbits
+ 216              		.align	2
+ 217              		.global	TIM2_IRQHandler
+ 218              		.thumb
+ 219              		.thumb_func
+ 221              	TIM2_IRQHandler:
+ 222              	.LFB32:
+  47:./module/src/timer.c **** 	}
+  48:./module/src/timer.c **** }
+  49:./module/src/timer.c **** 
+  50:./module/src/timer.c **** /*Timer2中断服务函数*/
+  51:./module/src/timer.c **** void TIM2_IRQHandler(void)
+  52:./module/src/timer.c **** {
+ 223              		.loc 1 52 0
+ 224              		.cfi_startproc
+ 225              		@ args = 0, pretend = 0, frame = 0
+ 226              		@ frame_needed = 0, uses_anonymous_args = 0
+ 227 0000 08B5     		push	{r3, lr}
+ 228              	.LCFI4:
+ 229              		.cfi_def_cfa_offset 8
+ 230              		.cfi_offset 3, -8
+ 231              		.cfi_offset 14, -4
+  53:./module/src/timer.c **** 	if ( TIM_GetITStatus(TIM2 , TIM_IT_Update) != RESET ) 
+ 232              		.loc 1 53 0
+ 233 0002 0121     		movs	r1, #1
+ 234 0004 4FF08040 		mov	r0, #1073741824
+ 235 0008 FFF7FEFF 		bl	TIM_GetITStatus
+ 236              	.LVL19:
+ 237 000c 60B1     		cbz	r0, .L19
+ARM GAS  /tmp/cc6zk9fg.s 			page 6
+
+
+  54:./module/src/timer.c **** 	{	
+  55:./module/src/timer.c **** 		TIM_ClearITPendingBit(TIM2 , TIM_FLAG_Update);
+ 238              		.loc 1 55 0
+ 239 000e 0121     		movs	r1, #1
+ 240 0010 4FF08040 		mov	r0, #1073741824
+ 241 0014 FFF7FEFF 		bl	TIM_ClearITPendingBit
+ 242              	.LVL20:
+  56:./module/src/timer.c **** 		STOP_TIME(TIM2);
+ 243              		.loc 1 56 0
+ 244 0018 0021     		movs	r1, #0
+ 245 001a 4FF08040 		mov	r0, #1073741824
+ 246 001e FFF7FEFF 		bl	TIM_Cmd
+ 247              	.LVL21:
+  57:./module/src/timer.c **** 		USART1_RX_FLAG=1;
+ 248              		.loc 1 57 0
+ 249 0022 0122     		movs	r2, #1
+ 250 0024 014B     		ldr	r3, .L22
+ 251 0026 1A70     		strb	r2, [r3]
+ 252              	.L19:
+ 253 0028 08BD     		pop	{r3, pc}
+ 254              	.L23:
+ 255 002a 00BF     		.align	2
+ 256              	.L22:
+ 257 002c 00000000 		.word	USART1_RX_FLAG
+ 258              		.cfi_endproc
+ 259              	.LFE32:
+ 261              		.text
+ 262              	.Letext0:
+ 263              		.file 2 "/opt/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/machine/_default_types.h"
+ 264              		.file 3 "/opt/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/sys/_stdint.h"
+ 265              		.file 4 "cmsis/stm32f10x.h"
+ 266              		.file 5 "libraries/inc/stm32f10x_tim.h"
+ 267              		.file 6 "cmsis/core_cm3.h"
+ 268              		.file 7 "module/inc/usart.h"
+ 269              		.file 8 "libraries/inc/stm32f10x_rcc.h"
+ 270              		.file 9 "module/inc/sys.h"
+ARM GAS  /tmp/cc6zk9fg.s 			page 7
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 timer.c
+     /tmp/cc6zk9fg.s:20     .text.TIMx_Current_Config:00000000 $t
+     /tmp/cc6zk9fg.s:25     .text.TIMx_Current_Config:00000000 TIMx_Current_Config
+     /tmp/cc6zk9fg.s:125    .text.TIMx_Current_Config:00000078 $d
+     /tmp/cc6zk9fg.s:131    .text.TIMx_Current_NVIC_Config:00000000 $t
+     /tmp/cc6zk9fg.s:136    .text.TIMx_Current_NVIC_Config:00000000 TIMx_Current_NVIC_Config
+     /tmp/cc6zk9fg.s:211    .text.TIMx_Current_NVIC_Config:00000060 $d
+     /tmp/cc6zk9fg.s:216    .text.TIM2_IRQHandler:00000000 $t
+     /tmp/cc6zk9fg.s:221    .text.TIM2_IRQHandler:00000000 TIM2_IRQHandler
+     /tmp/cc6zk9fg.s:257    .text.TIM2_IRQHandler:0000002c $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+RCC_APB1PeriphClockCmd
+TIM_DeInit
+TIM_TimeBaseInit
+STM32_NVIC_SetPriority
+TIM_ClearFlag
+TIM_ITConfig
+TIM_GetITStatus
+TIM_ClearITPendingBit
+TIM_Cmd
+USART1_RX_FLAG

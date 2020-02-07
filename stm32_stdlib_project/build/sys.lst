@@ -1,0 +1,171 @@
+ARM GAS  /tmp/ccgnA6T6.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"sys.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.STM32_NVIC_SetPriority,"ax",%progbits
+  20              		.align	2
+  21              		.global	STM32_NVIC_SetPriority
+  22              		.thumb
+  23              		.thumb_func
+  25              	STM32_NVIC_SetPriority:
+  26              	.LFB29:
+  27              		.file 1 "./module/src/sys.c"
+   1:./module/src/sys.c **** #include "sys.h"
+   2:./module/src/sys.c **** 
+   3:./module/src/sys.c **** void STM32_NVIC_SetPriority(IRQn_Type IRQn,uint32_t PreemptPriority, uint32_t SubPriority)
+   4:./module/src/sys.c **** {
+  28              		.loc 1 4 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 8
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              	.LVL0:
+  33 0000 70B5     		push	{r4, r5, r6, lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 16
+  36              		.cfi_offset 4, -16
+  37              		.cfi_offset 5, -12
+  38              		.cfi_offset 6, -8
+  39              		.cfi_offset 14, -4
+  40 0002 82B0     		sub	sp, sp, #8
+  41              	.LCFI1:
+  42              		.cfi_def_cfa_offset 24
+  43 0004 0646     		mov	r6, r0
+  44 0006 0D46     		mov	r5, r1
+  45 0008 1446     		mov	r4, r2
+   5:./module/src/sys.c **** 	NVIC_InitTypeDef NVIC_InitStruct;
+   6:./module/src/sys.c **** 
+   7:./module/src/sys.c **** 	/* 设置中断分组 */
+   8:./module/src/sys.c ****     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
+  46              		.loc 1 8 0
+  47 000a 4FF4A060 		mov	r0, #1280
+  48              	.LVL1:
+  49 000e FFF7FEFF 		bl	NVIC_PriorityGroupConfig
+  50              	.LVL2:
+ARM GAS  /tmp/ccgnA6T6.s 			page 2
+
+
+   9:./module/src/sys.c **** 	
+  10:./module/src/sys.c **** 	NVIC_InitStruct.NVIC_IRQChannel = IRQn;
+  51              		.loc 1 10 0
+  52 0012 8DF80460 		strb	r6, [sp, #4]
+  11:./module/src/sys.c ****     NVIC_InitStruct.NVIC_IRQChannelCmd = ENABLE;
+  53              		.loc 1 11 0
+  54 0016 0123     		movs	r3, #1
+  55 0018 8DF80730 		strb	r3, [sp, #7]
+  12:./module/src/sys.c ****     NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = PreemptPriority;
+  56              		.loc 1 12 0
+  57 001c 8DF80550 		strb	r5, [sp, #5]
+  13:./module/src/sys.c ****     NVIC_InitStruct.NVIC_IRQChannelSubPriority = SubPriority;
+  58              		.loc 1 13 0
+  59 0020 8DF80640 		strb	r4, [sp, #6]
+  14:./module/src/sys.c ****     NVIC_Init(&NVIC_InitStruct);
+  60              		.loc 1 14 0
+  61 0024 01A8     		add	r0, sp, #4
+  62 0026 FFF7FEFF 		bl	NVIC_Init
+  63              	.LVL3:
+  15:./module/src/sys.c **** }
+  64              		.loc 1 15 0
+  65 002a 02B0     		add	sp, sp, #8
+  66              	.LCFI2:
+  67              		.cfi_def_cfa_offset 16
+  68              		@ sp needed
+  69 002c 70BD     		pop	{r4, r5, r6, pc}
+  70              		.cfi_endproc
+  71              	.LFE29:
+  73 002e 00BF     		.section	.text.INTX_DISABLE,"ax",%progbits
+  74              		.align	2
+  75              		.global	INTX_DISABLE
+  76              		.thumb
+  77              		.thumb_func
+  79              	INTX_DISABLE:
+  80              	.LFB30:
+  16:./module/src/sys.c **** 
+  17:./module/src/sys.c **** //关闭所有中断
+  18:./module/src/sys.c **** void INTX_DISABLE(void)
+  19:./module/src/sys.c **** {		  
+  81              		.loc 1 19 0
+  82              		.cfi_startproc
+  83              		@ args = 0, pretend = 0, frame = 0
+  84              		@ frame_needed = 0, uses_anonymous_args = 0
+  85              		@ link register save eliminated.
+  20:./module/src/sys.c **** 	__ASM volatile("cpsid i");
+  86              		.loc 1 20 0
+  87              		.syntax unified
+  88              	@ 20 "./module/src/sys.c" 1
+  89 0000 72B6     		cpsid i
+  90              	@ 0 "" 2
+  91              		.thumb
+  92              		.syntax unified
+  93 0002 7047     		bx	lr
+  94              		.cfi_endproc
+  95              	.LFE30:
+  97              		.section	.text.INTX_ENABLE,"ax",%progbits
+  98              		.align	2
+ARM GAS  /tmp/ccgnA6T6.s 			page 3
+
+
+  99              		.global	INTX_ENABLE
+ 100              		.thumb
+ 101              		.thumb_func
+ 103              	INTX_ENABLE:
+ 104              	.LFB31:
+  21:./module/src/sys.c **** }
+  22:./module/src/sys.c **** //开启所有中断
+  23:./module/src/sys.c **** void INTX_ENABLE(void)
+  24:./module/src/sys.c **** {
+ 105              		.loc 1 24 0
+ 106              		.cfi_startproc
+ 107              		@ args = 0, pretend = 0, frame = 0
+ 108              		@ frame_needed = 0, uses_anonymous_args = 0
+ 109              		@ link register save eliminated.
+  25:./module/src/sys.c **** 	__ASM volatile("cpsie i");		  
+ 110              		.loc 1 25 0
+ 111              		.syntax unified
+ 112              	@ 25 "./module/src/sys.c" 1
+ 113 0000 62B6     		cpsie i
+ 114              	@ 0 "" 2
+ 115              		.thumb
+ 116              		.syntax unified
+ 117 0002 7047     		bx	lr
+ 118              		.cfi_endproc
+ 119              	.LFE31:
+ 121              		.text
+ 122              	.Letext0:
+ 123              		.file 2 "cmsis/stm32f10x.h"
+ 124              		.file 3 "/opt/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/machine/_default_types.h"
+ 125              		.file 4 "/opt/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/sys/_stdint.h"
+ 126              		.file 5 "libraries/inc/misc.h"
+ 127              		.file 6 "cmsis/core_cm3.h"
+ARM GAS  /tmp/ccgnA6T6.s 			page 4
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 sys.c
+     /tmp/ccgnA6T6.s:20     .text.STM32_NVIC_SetPriority:00000000 $t
+     /tmp/ccgnA6T6.s:25     .text.STM32_NVIC_SetPriority:00000000 STM32_NVIC_SetPriority
+     /tmp/ccgnA6T6.s:74     .text.INTX_DISABLE:00000000 $t
+     /tmp/ccgnA6T6.s:79     .text.INTX_DISABLE:00000000 INTX_DISABLE
+     /tmp/ccgnA6T6.s:98     .text.INTX_ENABLE:00000000 $t
+     /tmp/ccgnA6T6.s:103    .text.INTX_ENABLE:00000000 INTX_ENABLE
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+NVIC_PriorityGroupConfig
+NVIC_Init

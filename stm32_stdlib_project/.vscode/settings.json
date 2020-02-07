@@ -1,0 +1,17 @@
+{
+    "files.associations": {
+        "*.c": "c",
+        "newlib.h": "c",
+        "stdio.h": "c",
+        "cstdio": "c",
+        "beep.h": "c",
+        "led.h": "c",
+        "ff.h": "c",
+        "string.h": "c",
+        "lcd.h": "c",
+        "sys.h": "c",
+        "stm32f10x.h": "c",
+        "delay.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "Disabled"
+}

@@ -1,0 +1,1025 @@
+ARM GAS  /tmp/ccvAdnqo.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"rtc.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.RTC_Config,"ax",%progbits
+  20              		.align	2
+  21              		.global	RTC_Config
+  22              		.thumb
+  23              		.thumb_func
+  25              	RTC_Config:
+  26              	.LFB30:
+  27              		.file 1 "./module/src/rtc.c"
+   1:./module/src/rtc.c **** #include "rtc.h"
+   2:./module/src/rtc.c **** 
+   3:./module/src/rtc.c **** //闰年的月份
+   4:./module/src/rtc.c **** static int mon_r[12]={31,29,31,30,31,30,31,31,30,31,30,31};
+   5:./module/src/rtc.c **** //平年的月份
+   6:./module/src/rtc.c **** static int mon_p[12]={31,28,31,30,31,30,31,31,30,31,30,31};
+   7:./module/src/rtc.c **** 
+   8:./module/src/rtc.c **** //RTC标准时间结构体
+   9:./module/src/rtc.c **** struct tm RTC_Time;
+  10:./module/src/rtc.c **** 
+  11:./module/src/rtc.c **** //RTC基本配置
+  12:./module/src/rtc.c **** void RTC_Config(void)
+  13:./module/src/rtc.c **** {
+  28              		.loc 1 13 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32 0000 08B5     		push	{r3, lr}
+  33              	.LCFI0:
+  34              		.cfi_def_cfa_offset 8
+  35              		.cfi_offset 3, -8
+  36              		.cfi_offset 14, -4
+  14:./module/src/rtc.c **** 	//使能电源时钟和备份区域时钟
+  15:./module/src/rtc.c **** 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR | RCC_APB1Periph_BKP, ENABLE);
+  37              		.loc 1 15 0
+  38 0002 0121     		movs	r1, #1
+  39 0004 4FF0C050 		mov	r0, #402653184
+  40 0008 FFF7FEFF 		bl	RCC_APB1PeriphClockCmd
+  41              	.LVL0:
+  16:./module/src/rtc.c **** 	PWR_BackupAccessCmd(ENABLE); //使能 RTC 和后备寄存器访问 
+  42              		.loc 1 16 0
+ARM GAS  /tmp/ccvAdnqo.s 			page 2
+
+
+  43 000c 0120     		movs	r0, #1
+  44 000e FFF7FEFF 		bl	PWR_BackupAccessCmd
+  45              	.LVL1:
+  17:./module/src/rtc.c **** 	BKP_DeInit();//复位备份区域 
+  46              		.loc 1 17 0
+  47 0012 FFF7FEFF 		bl	BKP_DeInit
+  48              	.LVL2:
+  18:./module/src/rtc.c **** 	RCC_LSEConfig(RCC_LSE_ON);// 开启外部低速振荡器 
+  49              		.loc 1 18 0
+  50 0016 0120     		movs	r0, #1
+  51 0018 FFF7FEFF 		bl	RCC_LSEConfig
+  52              	.LVL3:
+  53              	.L2:
+  19:./module/src/rtc.c **** 	while(RCC_GetFlagStatus(RCC_FLAG_LSERDY) == RESET);//等待时钟就绪
+  54              		.loc 1 19 0 discriminator 1
+  55 001c 4120     		movs	r0, #65
+  56 001e FFF7FEFF 		bl	RCC_GetFlagStatus
+  57              	.LVL4:
+  58 0022 0028     		cmp	r0, #0
+  59 0024 FAD0     		beq	.L2
+  20:./module/src/rtc.c **** 	RCC_RTCCLKConfig(RCC_RTCCLKSource_LSE); //选择 LSE 作为 RTC 时钟 
+  60              		.loc 1 20 0
+  61 0026 4FF48070 		mov	r0, #256
+  62 002a FFF7FEFF 		bl	RCC_RTCCLKConfig
+  63              	.LVL5:
+  21:./module/src/rtc.c **** 	RCC_RTCCLKCmd(ENABLE); //使能 RTC 时钟
+  64              		.loc 1 21 0
+  65 002e 0120     		movs	r0, #1
+  66 0030 FFF7FEFF 		bl	RCC_RTCCLKCmd
+  67              	.LVL6:
+  22:./module/src/rtc.c **** 	
+  23:./module/src/rtc.c **** 	RTC_WaitForSynchro();//等待同步
+  68              		.loc 1 23 0
+  69 0034 FFF7FEFF 		bl	RTC_WaitForSynchro
+  70              	.LVL7:
+  24:./module/src/rtc.c **** 	RTC_WaitForLastTask();//等待上一步操作完成
+  71              		.loc 1 24 0
+  72 0038 FFF7FEFF 		bl	RTC_WaitForLastTask
+  73              	.LVL8:
+  25:./module/src/rtc.c **** 	
+  26:./module/src/rtc.c **** 	RTC_SetPrescaler(32767);//设置分频值
+  74              		.loc 1 26 0
+  75 003c 47F6FF70 		movw	r0, #32767
+  76 0040 FFF7FEFF 		bl	RTC_SetPrescaler
+  77              	.LVL9:
+  27:./module/src/rtc.c **** 	RTC_WaitForLastTask();//等待上一步操作完成
+  78              		.loc 1 27 0
+  79 0044 FFF7FEFF 		bl	RTC_WaitForLastTask
+  80              	.LVL10:
+  28:./module/src/rtc.c **** 	RTC_SetCounter(0);//设置计数器
+  81              		.loc 1 28 0
+  82 0048 0020     		movs	r0, #0
+  83 004a FFF7FEFF 		bl	RTC_SetCounter
+  84              	.LVL11:
+  29:./module/src/rtc.c **** 	RTC_WaitForLastTask();//等待上一步操作完成
+  85              		.loc 1 29 0
+  86 004e FFF7FEFF 		bl	RTC_WaitForLastTask
+ARM GAS  /tmp/ccvAdnqo.s 			page 3
+
+
+  87              	.LVL12:
+  30:./module/src/rtc.c **** 	RTC_SetAlarm(60);//设置闹钟时间
+  88              		.loc 1 30 0
+  89 0052 3C20     		movs	r0, #60
+  90 0054 FFF7FEFF 		bl	RTC_SetAlarm
+  91              	.LVL13:
+  31:./module/src/rtc.c **** 	RTC_WaitForLastTask();//等待上一步操作完成
+  92              		.loc 1 31 0
+  93 0058 FFF7FEFF 		bl	RTC_WaitForLastTask
+  94              	.LVL14:
+  95 005c 08BD     		pop	{r3, pc}
+  96              		.cfi_endproc
+  97              	.LFE30:
+  99 005e 00BF     		.section	.text.RTC_NVIC_Config,"ax",%progbits
+ 100              		.align	2
+ 101              		.global	RTC_NVIC_Config
+ 102              		.thumb
+ 103              		.thumb_func
+ 105              	RTC_NVIC_Config:
+ 106              	.LFB31:
+  32:./module/src/rtc.c **** }
+  33:./module/src/rtc.c **** //RTC中断配置
+  34:./module/src/rtc.c **** void RTC_NVIC_Config(uint32_t PreemptPriority, uint32_t SubPriority ,u8 Alarm_flag)
+  35:./module/src/rtc.c **** {
+ 107              		.loc 1 35 0
+ 108              		.cfi_startproc
+ 109              		@ args = 0, pretend = 0, frame = 0
+ 110              		@ frame_needed = 0, uses_anonymous_args = 0
+ 111              	.LVL15:
+ 112 0000 70B5     		push	{r4, r5, r6, lr}
+ 113              	.LCFI1:
+ 114              		.cfi_def_cfa_offset 16
+ 115              		.cfi_offset 4, -16
+ 116              		.cfi_offset 5, -12
+ 117              		.cfi_offset 6, -8
+ 118              		.cfi_offset 14, -4
+ 119 0002 0446     		mov	r4, r0
+ 120 0004 0D46     		mov	r5, r1
+ 121 0006 1646     		mov	r6, r2
+  36:./module/src/rtc.c **** 	RTC_ITConfig(RTC_IT_SEC,ENABLE);
+ 122              		.loc 1 36 0
+ 123 0008 0121     		movs	r1, #1
+ 124              	.LVL16:
+ 125 000a 0846     		mov	r0, r1
+ 126              	.LVL17:
+ 127 000c FFF7FEFF 		bl	RTC_ITConfig
+ 128              	.LVL18:
+  37:./module/src/rtc.c **** 	RTC_WaitForLastTask();//等待上一步操作完成
+ 129              		.loc 1 37 0
+ 130 0010 FFF7FEFF 		bl	RTC_WaitForLastTask
+ 131              	.LVL19:
+  38:./module/src/rtc.c **** 	if(Alarm_flag)
+ 132              		.loc 1 38 0
+ 133 0014 2EB1     		cbz	r6, .L5
+  39:./module/src/rtc.c **** 	{
+  40:./module/src/rtc.c **** 		RTC_ITConfig(RTC_IT_ALR,ENABLE);
+ 134              		.loc 1 40 0
+ARM GAS  /tmp/ccvAdnqo.s 			page 4
+
+
+ 135 0016 0121     		movs	r1, #1
+ 136 0018 0220     		movs	r0, #2
+ 137 001a FFF7FEFF 		bl	RTC_ITConfig
+ 138              	.LVL20:
+  41:./module/src/rtc.c **** 		RTC_WaitForLastTask();//等待上一步操作完成
+ 139              		.loc 1 41 0
+ 140 001e FFF7FEFF 		bl	RTC_WaitForLastTask
+ 141              	.LVL21:
+ 142              	.L5:
+  42:./module/src/rtc.c **** 	}
+  43:./module/src/rtc.c **** 	STM32_NVIC_SetPriority(RTC_IRQn,PreemptPriority,SubPriority);
+ 143              		.loc 1 43 0
+ 144 0022 2A46     		mov	r2, r5
+ 145 0024 2146     		mov	r1, r4
+ 146 0026 0320     		movs	r0, #3
+ 147 0028 FFF7FEFF 		bl	STM32_NVIC_SetPriority
+ 148              	.LVL22:
+ 149 002c 70BD     		pop	{r4, r5, r6, pc}
+ 150              		.cfi_endproc
+ 151              	.LFE31:
+ 153 002e 00BF     		.section	.text.RTC_GetYearState,"ax",%progbits
+ 154              		.align	2
+ 155              		.global	RTC_GetYearState
+ 156              		.thumb
+ 157              		.thumb_func
+ 159              	RTC_GetYearState:
+ 160              	.LFB32:
+  44:./module/src/rtc.c **** }
+  45:./module/src/rtc.c **** //闰年判断
+  46:./module/src/rtc.c **** u32 RTC_GetYearState(u32 year)
+  47:./module/src/rtc.c **** {
+ 161              		.loc 1 47 0
+ 162              		.cfi_startproc
+ 163              		@ args = 0, pretend = 0, frame = 0
+ 164              		@ frame_needed = 0, uses_anonymous_args = 0
+ 165              		@ link register save eliminated.
+ 166              	.LVL23:
+  48:./module/src/rtc.c **** 	if((year%4==0 && year%100!=0) || year%400==0)
+ 167              		.loc 1 48 0
+ 168 0000 10F0030F 		tst	r0, #3
+ 169 0004 07D1     		bne	.L8
+ 170              		.loc 1 48 0 is_stmt 0 discriminator 1
+ 171 0006 0B4B     		ldr	r3, .L12
+ 172 0008 A3FB0023 		umull	r2, r3, r3, r0
+ 173 000c 5B09     		lsrs	r3, r3, #5
+ 174 000e 6422     		movs	r2, #100
+ 175 0010 02FB1303 		mls	r3, r2, r3, r0
+ 176 0014 53B9     		cbnz	r3, .L10
+ 177              	.L8:
+ 178              		.loc 1 48 0 discriminator 3
+ 179 0016 074B     		ldr	r3, .L12
+ 180 0018 A3FB0023 		umull	r2, r3, r3, r0
+ 181 001c DB09     		lsrs	r3, r3, #7
+ 182 001e 4FF4C872 		mov	r2, #400
+ 183 0022 02FB1303 		mls	r3, r2, r3, r0
+ 184 0026 1BB9     		cbnz	r3, .L11
+  49:./module/src/rtc.c **** 	{
+ARM GAS  /tmp/ccvAdnqo.s 			page 5
+
+
+  50:./module/src/rtc.c **** 		return 1;
+ 185              		.loc 1 50 0 is_stmt 1
+ 186 0028 0120     		movs	r0, #1
+ 187              	.LVL24:
+ 188 002a 7047     		bx	lr
+ 189              	.LVL25:
+ 190              	.L10:
+ 191 002c 0120     		movs	r0, #1
+ 192              	.LVL26:
+ 193 002e 7047     		bx	lr
+ 194              	.LVL27:
+ 195              	.L11:
+  51:./module/src/rtc.c **** 	}
+  52:./module/src/rtc.c **** 	return 0;
+ 196              		.loc 1 52 0
+ 197 0030 0020     		movs	r0, #0
+ 198              	.LVL28:
+  53:./module/src/rtc.c **** }
+ 199              		.loc 1 53 0
+ 200 0032 7047     		bx	lr
+ 201              	.L13:
+ 202              		.align	2
+ 203              	.L12:
+ 204 0034 1F85EB51 		.word	1374389535
+ 205              		.cfi_endproc
+ 206              	.LFE32:
+ 208              		.section	.text.SecTime_NormTime,"ax",%progbits
+ 209              		.align	2
+ 210              		.global	SecTime_NormTime
+ 211              		.thumb
+ 212              		.thumb_func
+ 214              	SecTime_NormTime:
+ 215              	.LFB33:
+  54:./module/src/rtc.c **** //秒时间转标准时间
+  55:./module/src/rtc.c **** void SecTime_NormTime(u32 time,struct tm *structTime)
+  56:./module/src/rtc.c **** {	//转换函数
+ 216              		.loc 1 56 0
+ 217              		.cfi_startproc
+ 218              		@ args = 0, pretend = 0, frame = 0
+ 219              		@ frame_needed = 0, uses_anonymous_args = 0
+ 220              	.LVL29:
+ 221 0000 70B5     		push	{r4, r5, r6, lr}
+ 222              	.LCFI2:
+ 223              		.cfi_def_cfa_offset 16
+ 224              		.cfi_offset 4, -16
+ 225              		.cfi_offset 5, -12
+ 226              		.cfi_offset 6, -8
+ 227              		.cfi_offset 14, -4
+ 228 0002 0446     		mov	r4, r0
+ 229 0004 0D46     		mov	r5, r1
+  57:./module/src/rtc.c **** 	u32 i;
+  58:./module/src/rtc.c **** 	structTime->tm_year=1970; //基准年份
+ 230              		.loc 1 58 0
+ 231 0006 40F2B273 		movw	r3, #1970
+ 232 000a 8B60     		str	r3, [r1, #8]
+ 233              	.LVL30:
+ 234              	.L15:
+ARM GAS  /tmp/ccvAdnqo.s 			page 6
+
+
+  59:./module/src/rtc.c **** 
+  60:./module/src/rtc.c **** 	/*1. 计算当前的年份*/
+  61:./module/src/rtc.c **** 	while(1)
+  62:./module/src/rtc.c **** 	{
+  63:./module/src/rtc.c **** 		if(RTC_GetYearState(structTime->tm_year))
+ 235              		.loc 1 63 0
+ 236 000c AE68     		ldr	r6, [r5, #8]
+ 237 000e 3046     		mov	r0, r6
+ 238 0010 FFF7FEFF 		bl	RTC_GetYearState
+ 239              	.LVL31:
+ 240 0014 0246     		mov	r2, r0
+ 241 0016 48B1     		cbz	r0, .L16
+  64:./module/src/rtc.c **** 		{
+  65:./module/src/rtc.c **** 			if(time >= 366*24*60*60) //够一年
+ 242              		.loc 1 65 0
+ 243 0018 2E4B     		ldr	r3, .L31
+ 244 001a 9C42     		cmp	r4, r3
+ 245 001c 12D9     		bls	.L17
+  66:./module/src/rtc.c **** 			{
+  67:./module/src/rtc.c **** 				time-=366*24*60*60;
+ 246              		.loc 1 67 0
+ 247 001e A4F1F174 		sub	r4, r4, #31588352
+ 248              	.LVL32:
+ 249 0022 A4F50544 		sub	r4, r4, #34048
+ 250              	.LVL33:
+  68:./module/src/rtc.c **** 				structTime->tm_year++;
+ 251              		.loc 1 68 0
+ 252 0026 0136     		adds	r6, r6, #1
+ 253 0028 AE60     		str	r6, [r5, #8]
+ 254 002a EFE7     		b	.L15
+ 255              	.L16:
+  69:./module/src/rtc.c **** 			}
+  70:./module/src/rtc.c **** 			else break;
+  71:./module/src/rtc.c **** 		}
+  72:./module/src/rtc.c **** 		else
+  73:./module/src/rtc.c **** 		{
+  74:./module/src/rtc.c **** 			if(time>=365*24*60*60) //够一年
+ 256              		.loc 1 74 0
+ 257 002c 2A4B     		ldr	r3, .L31+4
+ 258 002e 9C42     		cmp	r4, r3
+ 259 0030 08D9     		bls	.L17
+  75:./module/src/rtc.c **** 			{
+  76:./module/src/rtc.c **** 				time-=365*24*60*60;
+ 260              		.loc 1 76 0
+ 261 0032 04F17E44 		add	r4, r4, #-33554432
+ 262              	.LVL34:
+ 263 0036 04F5F614 		add	r4, r4, #2015232
+ 264              	.LVL35:
+ 265 003a 04F54864 		add	r4, r4, #3200
+ 266              	.LVL36:
+  77:./module/src/rtc.c **** 				structTime->tm_year++;
+ 267              		.loc 1 77 0
+ 268 003e 0136     		adds	r6, r6, #1
+ 269 0040 AE60     		str	r6, [r5, #8]
+ 270 0042 E3E7     		b	.L15
+ 271              	.L17:
+  78:./module/src/rtc.c **** 			}
+ARM GAS  /tmp/ccvAdnqo.s 			page 7
+
+
+  79:./module/src/rtc.c **** 			else break;
+  80:./module/src/rtc.c **** 		}
+  81:./module/src/rtc.c **** 	}
+  82:./module/src/rtc.c **** 
+  83:./module/src/rtc.c **** 	/*2. 计算当前的月份*/
+  84:./module/src/rtc.c **** 
+  85:./module/src/rtc.c **** 	structTime->tm_mon=1;
+ 272              		.loc 1 85 0
+ 273 0044 0123     		movs	r3, #1
+ 274 0046 2B71     		strb	r3, [r5, #4]
+ 275              	.LVL37:
+  86:./module/src/rtc.c **** #if 0	//暂时未优化完成
+  87:./module/src/rtc.c **** 	for(i=0;i<12;i++)
+  88:./module/src/rtc.c **** 	{
+  89:./module/src/rtc.c **** 		if(time >= mon_r[i]*24*60*60)
+  90:./module/src/rtc.c **** 		{	
+  91:./module/src/rtc.c **** 			if(i == 1)
+  92:./module/src/rtc.c **** 			{
+  93:./module/src/rtc.c **** 				if(RTC_GetYearState(structTime->tm_year))
+  94:./module/src/rtc.c **** 				{
+  95:./module/src/rtc.c **** 					time-=mon_r[i]*24*60*60;
+  96:./module/src/rtc.c **** 				}
+  97:./module/src/rtc.c **** 				else
+  98:./module/src/rtc.c **** 				{
+  99:./module/src/rtc.c **** 					time-=mon_p[i]*24*60*60;
+ 100:./module/src/rtc.c **** 				}
+ 101:./module/src/rtc.c **** 			}
+ 102:./module/src/rtc.c **** 			structTime->tm_mon++;
+ 103:./module/src/rtc.c **** 		}
+ 104:./module/src/rtc.c **** 		else break;		
+ 105:./module/src/rtc.c **** 	}
+ 106:./module/src/rtc.c **** #else
+ 107:./module/src/rtc.c **** 	for(i=0;i<12;i++)
+ 276              		.loc 1 107 0
+ 277 0048 0023     		movs	r3, #0
+ 278 004a 1EE0     		b	.L19
+ 279              	.LVL38:
+ 280              	.L23:
+ 108:./module/src/rtc.c **** 	{
+ 109:./module/src/rtc.c **** 		if(RTC_GetYearState(structTime->tm_year))
+ 281              		.loc 1 109 0
+ 282 004c 72B1     		cbz	r2, .L20
+ 110:./module/src/rtc.c **** 		{
+ 111:./module/src/rtc.c **** 			if(time >= mon_r[i]*24*60*60)
+ 283              		.loc 1 111 0
+ 284 004e 2349     		ldr	r1, .L31+8
+ 285 0050 51F82300 		ldr	r0, [r1, r3, lsl #2]
+ 286 0054 2249     		ldr	r1, .L31+12
+ 287 0056 01FB00F1 		mul	r1, r1, r0
+ 288 005a 8C42     		cmp	r4, r1
+ 289 005c 17D3     		bcc	.L21
+ 112:./module/src/rtc.c **** 			{
+ 113:./module/src/rtc.c **** 				time-=mon_r[i]*24*60*60;
+ 290              		.loc 1 113 0
+ 291 005e 2149     		ldr	r1, .L31+16
+ 292 0060 01FB0044 		mla	r4, r1, r0, r4
+ 293              	.LVL39:
+ARM GAS  /tmp/ccvAdnqo.s 			page 8
+
+
+ 114:./module/src/rtc.c **** 				structTime->tm_mon++;
+ 294              		.loc 1 114 0
+ 295 0064 2979     		ldrb	r1, [r5, #4]	@ zero_extendqisi2
+ 296 0066 0131     		adds	r1, r1, #1
+ 297 0068 2971     		strb	r1, [r5, #4]
+ 298 006a 0DE0     		b	.L22
+ 299              	.L20:
+ 115:./module/src/rtc.c **** 			}
+ 116:./module/src/rtc.c **** 			else break;		
+ 117:./module/src/rtc.c **** 		}
+ 118:./module/src/rtc.c **** 		else
+ 119:./module/src/rtc.c **** 		{
+ 120:./module/src/rtc.c **** 			if(time>=mon_p[i]*24*60*60)
+ 300              		.loc 1 120 0
+ 301 006c 1E49     		ldr	r1, .L31+20
+ 302 006e 51F82300 		ldr	r0, [r1, r3, lsl #2]
+ 303 0072 1B49     		ldr	r1, .L31+12
+ 304 0074 01FB00F1 		mul	r1, r1, r0
+ 305 0078 8C42     		cmp	r4, r1
+ 306 007a 08D3     		bcc	.L21
+ 121:./module/src/rtc.c **** 			{
+ 122:./module/src/rtc.c **** 				time-=mon_p[i]*24*60*60;
+ 307              		.loc 1 122 0
+ 308 007c 1949     		ldr	r1, .L31+16
+ 309 007e 01FB0044 		mla	r4, r1, r0, r4
+ 310              	.LVL40:
+ 123:./module/src/rtc.c **** 				structTime->tm_mon++;
+ 311              		.loc 1 123 0
+ 312 0082 2979     		ldrb	r1, [r5, #4]	@ zero_extendqisi2
+ 313 0084 0131     		adds	r1, r1, #1
+ 314 0086 2971     		strb	r1, [r5, #4]
+ 315              	.L22:
+ 107:./module/src/rtc.c **** 	{
+ 316              		.loc 1 107 0 discriminator 2
+ 317 0088 0133     		adds	r3, r3, #1
+ 318              	.LVL41:
+ 319              	.L19:
+ 107:./module/src/rtc.c **** 	{
+ 320              		.loc 1 107 0 is_stmt 0 discriminator 1
+ 321 008a 0B2B     		cmp	r3, #11
+ 322 008c DED9     		bls	.L23
+ 323              	.L21:
+ 124:./module/src/rtc.c **** 			}
+ 125:./module/src/rtc.c **** 			else break;	
+ 126:./module/src/rtc.c **** 		}
+ 127:./module/src/rtc.c **** 	}
+ 128:./module/src/rtc.c **** 
+ 129:./module/src/rtc.c **** 	/*3. 计算当前的天数*/
+ 130:./module/src/rtc.c **** 	structTime->tm_mday=1;
+ 324              		.loc 1 130 0 is_stmt 1
+ 325 008e 0123     		movs	r3, #1
+ 326              	.LVL42:
+ 327 0090 EB70     		strb	r3, [r5, #3]
+ 328              	.L25:
+ 131:./module/src/rtc.c **** 	while(1)
+ 132:./module/src/rtc.c **** 	{
+ 133:./module/src/rtc.c **** 		if(time>=24*60*60)
+ARM GAS  /tmp/ccvAdnqo.s 			page 9
+
+
+ 329              		.loc 1 133 0
+ 330 0092 164B     		ldr	r3, .L31+24
+ 331 0094 9C42     		cmp	r4, r3
+ 332 0096 07D9     		bls	.L24
+ 134:./module/src/rtc.c **** 		{
+ 135:./module/src/rtc.c **** 			time-=24*60*60;
+ 333              		.loc 1 135 0
+ 334 0098 A4F5A834 		sub	r4, r4, #86016
+ 335              	.LVL43:
+ 336 009c A4F5C074 		sub	r4, r4, #384
+ 337              	.LVL44:
+ 136:./module/src/rtc.c **** 			structTime->tm_mday++;
+ 338              		.loc 1 136 0
+ 339 00a0 EB78     		ldrb	r3, [r5, #3]	@ zero_extendqisi2
+ 340 00a2 0133     		adds	r3, r3, #1
+ 341 00a4 EB70     		strb	r3, [r5, #3]
+ 137:./module/src/rtc.c **** 		}
+ 138:./module/src/rtc.c **** 		else break;
+ 139:./module/src/rtc.c **** 	}
+ 342              		.loc 1 139 0
+ 343 00a6 F4E7     		b	.L25
+ 344              	.L24:
+ 140:./module/src/rtc.c **** 
+ 141:./module/src/rtc.c **** 	/*4. 计算当前的小时*/
+ 142:./module/src/rtc.c **** 	structTime->tm_hour=0;
+ 345              		.loc 1 142 0
+ 346 00a8 0023     		movs	r3, #0
+ 347 00aa AB70     		strb	r3, [r5, #2]
+ 348              	.L27:
+ 143:./module/src/rtc.c **** 	while(1)
+ 144:./module/src/rtc.c **** 	{
+ 145:./module/src/rtc.c **** 		if(time>=60*60)
+ 349              		.loc 1 145 0
+ 350 00ac B4F5616F 		cmp	r4, #3600
+ 351 00b0 05D3     		bcc	.L26
+ 146:./module/src/rtc.c **** 		{
+ 147:./module/src/rtc.c **** 			time-=60*60;
+ 352              		.loc 1 147 0
+ 353 00b2 A4F56164 		sub	r4, r4, #3600
+ 354              	.LVL45:
+ 148:./module/src/rtc.c **** 			structTime->tm_hour++;
+ 355              		.loc 1 148 0
+ 356 00b6 AB78     		ldrb	r3, [r5, #2]	@ zero_extendqisi2
+ 357 00b8 0133     		adds	r3, r3, #1
+ 358 00ba AB70     		strb	r3, [r5, #2]
+ 149:./module/src/rtc.c **** 		}
+ 150:./module/src/rtc.c **** 		else break;
+ 151:./module/src/rtc.c **** 	}
+ 359              		.loc 1 151 0
+ 360 00bc F6E7     		b	.L27
+ 361              	.L26:
+ 152:./module/src/rtc.c **** 
+ 153:./module/src/rtc.c **** 	/*5. 计算当前的分钟*/
+ 154:./module/src/rtc.c **** 	structTime->tm_min=0;
+ 362              		.loc 1 154 0
+ 363 00be 0023     		movs	r3, #0
+ 364 00c0 6B70     		strb	r3, [r5, #1]
+ARM GAS  /tmp/ccvAdnqo.s 			page 10
+
+
+ 365              	.L29:
+ 155:./module/src/rtc.c **** 	while(1)
+ 156:./module/src/rtc.c **** 	{
+ 157:./module/src/rtc.c **** 		if(time>=60)
+ 366              		.loc 1 157 0
+ 367 00c2 3B2C     		cmp	r4, #59
+ 368 00c4 04D9     		bls	.L28
+ 158:./module/src/rtc.c **** 		{
+ 159:./module/src/rtc.c **** 			time-=60;
+ 369              		.loc 1 159 0
+ 370 00c6 3C3C     		subs	r4, r4, #60
+ 371              	.LVL46:
+ 160:./module/src/rtc.c **** 			structTime->tm_min++;
+ 372              		.loc 1 160 0
+ 373 00c8 6B78     		ldrb	r3, [r5, #1]	@ zero_extendqisi2
+ 374 00ca 0133     		adds	r3, r3, #1
+ 375 00cc 6B70     		strb	r3, [r5, #1]
+ 161:./module/src/rtc.c **** 		}
+ 162:./module/src/rtc.c **** 		else break;
+ 163:./module/src/rtc.c **** 	}
+ 376              		.loc 1 163 0
+ 377 00ce F8E7     		b	.L29
+ 378              	.L28:
+ 164:./module/src/rtc.c **** 
+ 165:./module/src/rtc.c **** 	/*6. 计算当前的秒*/
+ 166:./module/src/rtc.c **** 	structTime->tm_sec=time;
+ 379              		.loc 1 166 0
+ 380 00d0 2C70     		strb	r4, [r5]
+ 381 00d2 70BD     		pop	{r4, r5, r6, pc}
+ 382              	.LVL47:
+ 383              	.L32:
+ 384              		.align	2
+ 385              	.L31:
+ 386 00d4 FF84E201 		.word	31622399
+ 387 00d8 7F33E101 		.word	31535999
+ 388 00dc 00000000 		.word	.LANCHOR0
+ 389 00e0 80510100 		.word	86400
+ 390 00e4 80AEFEFF 		.word	-86400
+ 391 00e8 00000000 		.word	.LANCHOR1
+ 392 00ec 7F510100 		.word	86399
+ 393              		.cfi_endproc
+ 394              	.LFE33:
+ 396              		.section	.text.NormTime_SecTime,"ax",%progbits
+ 397              		.align	2
+ 398              		.global	NormTime_SecTime
+ 399              		.thumb
+ 400              		.thumb_func
+ 402              	NormTime_SecTime:
+ 403              	.LFB34:
+ 167:./module/src/rtc.c **** }
+ 168:./module/src/rtc.c **** #endif
+ 169:./module/src/rtc.c **** //标准时间转秒时间
+ 170:./module/src/rtc.c **** u32 NormTime_SecTime(struct tm *structTime)
+ 171:./module/src/rtc.c **** {
+ 404              		.loc 1 171 0
+ 405              		.cfi_startproc
+ 406              		@ args = 0, pretend = 0, frame = 0
+ARM GAS  /tmp/ccvAdnqo.s 			page 11
+
+
+ 407              		@ frame_needed = 0, uses_anonymous_args = 0
+ 408              		@ link register save eliminated.
+ 409              	.LVL48:
+ 410 0000 30B4     		push	{r4, r5}
+ 411              	.LCFI3:
+ 412              		.cfi_def_cfa_offset 8
+ 413              		.cfi_offset 4, -8
+ 414              		.cfi_offset 5, -4
+ 172:./module/src/rtc.c **** 	u32 sectime;
+ 173:./module/src/rtc.c **** 	u32 mon = structTime->tm_mon, year = structTime->tm_year;
+ 415              		.loc 1 173 0
+ 416 0002 0279     		ldrb	r2, [r0, #4]	@ zero_extendqisi2
+ 417              	.LVL49:
+ 418 0004 8368     		ldr	r3, [r0, #8]
+ 419              	.LVL50:
+ 174:./module/src/rtc.c **** 	if(0 >= (int)(mon -= 2))
+ 420              		.loc 1 174 0
+ 421 0006 951E     		subs	r5, r2, #2
+ 422              	.LVL51:
+ 423 0008 002D     		cmp	r5, #0
+ 424 000a 02DC     		bgt	.L34
+ 175:./module/src/rtc.c **** 	{
+ 176:./module/src/rtc.c **** 		mon += 12;
+ 425              		.loc 1 176 0
+ 426 000c 02F10A05 		add	r5, r2, #10
+ 427              	.LVL52:
+ 177:./module/src/rtc.c **** 		year -= 1;
+ 428              		.loc 1 177 0
+ 429 0010 013B     		subs	r3, r3, #1
+ 430              	.LVL53:
+ 431              	.L34:
+ 178:./module/src/rtc.c **** 	}
+ 179:./module/src/rtc.c **** 	sectime=((((unsigned long)
+ 180:./module/src/rtc.c **** 			(year/4 - year/100 + year/400 + 367*mon/12 + structTime->tm_mday) +
+ 432              		.loc 1 180 0
+ 433 0012 1549     		ldr	r1, .L36
+ 434 0014 A1FB0324 		umull	r2, r4, r1, r3
+ 435 0018 6109     		lsrs	r1, r4, #5
+ 436 001a C1EB9301 		rsb	r1, r1, r3, lsr #2
+ 437 001e 01EBD411 		add	r1, r1, r4, lsr #7
+ 438 0022 40F26F12 		movw	r2, #367
+ 439 0026 02FB05F2 		mul	r2, r2, r5
+ 440 002a 104C     		ldr	r4, .L36+4
+ 441 002c A4FB0242 		umull	r4, r2, r4, r2
+ 442 0030 01EBD202 		add	r2, r1, r2, lsr #3
+ 443 0034 C178     		ldrb	r1, [r0, #3]	@ zero_extendqisi2
+ 179:./module/src/rtc.c **** 			(year/4 - year/100 + year/400 + 367*mon/12 + structTime->tm_mday) +
+ 444              		.loc 1 179 0
+ 445 0036 0A44     		add	r2, r2, r1
+ 446              		.loc 1 180 0
+ 447 0038 40F26D11 		movw	r1, #365
+ 448 003c 01FB0323 		mla	r3, r1, r3, r2
+ 449              	.LVL54:
+ 181:./module/src/rtc.c **** 			year*365 - 719499
+ 182:./module/src/rtc.c **** 			)*24 + structTime->tm_hour
+ 450              		.loc 1 182 0
+ 451 0040 8278     		ldrb	r2, [r0, #2]	@ zero_extendqisi2
+ARM GAS  /tmp/ccvAdnqo.s 			page 12
+
+
+ 452 0042 03EB4303 		add	r3, r3, r3, lsl #1
+ 453 0046 D900     		lsls	r1, r3, #3
+ 454 0048 0A44     		add	r2, r2, r1
+ 183:./module/src/rtc.c **** 		)*60 + structTime->tm_min
+ 455              		.loc 1 183 0
+ 456 004a 4378     		ldrb	r3, [r0, #1]	@ zero_extendqisi2
+ 457 004c C2EB0212 		rsb	r2, r2, r2, lsl #4
+ 458 0050 9100     		lsls	r1, r2, #2
+ 459 0052 0B44     		add	r3, r3, r1
+ 184:./module/src/rtc.c **** 	)*60 + structTime->tm_sec;
+ 460              		.loc 1 184 0
+ 461 0054 0278     		ldrb	r2, [r0]	@ zero_extendqisi2
+ 462 0056 C3EB0313 		rsb	r3, r3, r3, lsl #4
+ 463 005a 9900     		lsls	r1, r3, #2
+ 464 005c 8B18     		adds	r3, r1, r2
+ 465              	.LVL55:
+ 185:./module/src/rtc.c **** 	return sectime;
+ 186:./module/src/rtc.c **** }
+ 466              		.loc 1 186 0
+ 467 005e 0448     		ldr	r0, .L36+8
+ 468              	.LVL56:
+ 469 0060 1844     		add	r0, r0, r3
+ 470              	.LVL57:
+ 471 0062 30BC     		pop	{r4, r5}
+ 472              	.LCFI4:
+ 473              		.cfi_restore 5
+ 474              		.cfi_restore 4
+ 475              		.cfi_def_cfa_offset 0
+ 476              	.LVL58:
+ 477 0064 7047     		bx	lr
+ 478              	.L37:
+ 479 0066 00BF     		.align	2
+ 480              	.L36:
+ 481 0068 1F85EB51 		.word	1374389535
+ 482 006c ABAAAAAA 		.word	-1431655765
+ 483 0070 80BFB186 		.word	-2035171456
+ 484              		.cfi_endproc
+ 485              	.LFE34:
+ 487              		.section	.text.RTC_GetTime,"ax",%progbits
+ 488              		.align	2
+ 489              		.global	RTC_GetTime
+ 490              		.thumb
+ 491              		.thumb_func
+ 493              	RTC_GetTime:
+ 494              	.LFB35:
+ 187:./module/src/rtc.c **** //获取时间
+ 188:./module/src/rtc.c **** void RTC_GetTime(struct tm *structTime)
+ 189:./module/src/rtc.c **** {
+ 495              		.loc 1 189 0
+ 496              		.cfi_startproc
+ 497              		@ args = 0, pretend = 0, frame = 0
+ 498              		@ frame_needed = 0, uses_anonymous_args = 0
+ 499              	.LVL59:
+ 500 0000 10B5     		push	{r4, lr}
+ 501              	.LCFI5:
+ 502              		.cfi_def_cfa_offset 8
+ 503              		.cfi_offset 4, -8
+ARM GAS  /tmp/ccvAdnqo.s 			page 13
+
+
+ 504              		.cfi_offset 14, -4
+ 505 0002 0446     		mov	r4, r0
+ 506              	.LVL60:
+ 190:./module/src/rtc.c **** 	u32 Ttime=0;
+ 191:./module/src/rtc.c **** 	Ttime=RTC_GetCounter();
+ 507              		.loc 1 191 0
+ 508 0004 FFF7FEFF 		bl	RTC_GetCounter
+ 509              	.LVL61:
+ 192:./module/src/rtc.c **** 	SecTime_NormTime(Ttime,structTime);
+ 510              		.loc 1 192 0
+ 511 0008 2146     		mov	r1, r4
+ 512 000a FFF7FEFF 		bl	SecTime_NormTime
+ 513              	.LVL62:
+ 514 000e 10BD     		pop	{r4, pc}
+ 515              		.cfi_endproc
+ 516              	.LFE35:
+ 518              		.section	.text.RTC_SetTime,"ax",%progbits
+ 519              		.align	2
+ 520              		.global	RTC_SetTime
+ 521              		.thumb
+ 522              		.thumb_func
+ 524              	RTC_SetTime:
+ 525              	.LFB36:
+ 193:./module/src/rtc.c **** }
+ 194:./module/src/rtc.c **** //设置时间
+ 195:./module/src/rtc.c **** void RTC_SetTime(struct tm *structTime)
+ 196:./module/src/rtc.c **** {
+ 526              		.loc 1 196 0
+ 527              		.cfi_startproc
+ 528              		@ args = 0, pretend = 0, frame = 0
+ 529              		@ frame_needed = 0, uses_anonymous_args = 0
+ 530              	.LVL63:
+ 531 0000 08B5     		push	{r3, lr}
+ 532              	.LCFI6:
+ 533              		.cfi_def_cfa_offset 8
+ 534              		.cfi_offset 3, -8
+ 535              		.cfi_offset 14, -4
+ 197:./module/src/rtc.c **** 	RTC_SetCounter( NormTime_SecTime(structTime));
+ 536              		.loc 1 197 0
+ 537 0002 FFF7FEFF 		bl	NormTime_SecTime
+ 538              	.LVL64:
+ 539 0006 FFF7FEFF 		bl	RTC_SetCounter
+ 540              	.LVL65:
+ 198:./module/src/rtc.c **** 	RTC_WaitForLastTask();
+ 541              		.loc 1 198 0
+ 542 000a FFF7FEFF 		bl	RTC_WaitForLastTask
+ 543              	.LVL66:
+ 544 000e 08BD     		pop	{r3, pc}
+ 545              		.cfi_endproc
+ 546              	.LFE36:
+ 548              		.section	.text.RTC_PutTime,"ax",%progbits
+ 549              		.align	2
+ 550              		.global	RTC_PutTime
+ 551              		.thumb
+ 552              		.thumb_func
+ 554              	RTC_PutTime:
+ 555              	.LFB37:
+ARM GAS  /tmp/ccvAdnqo.s 			page 14
+
+
+ 199:./module/src/rtc.c **** }
+ 200:./module/src/rtc.c **** 
+ 201:./module/src/rtc.c **** 
+ 202:./module/src/rtc.c **** void RTC_PutTime(void)
+ 203:./module/src/rtc.c **** {
+ 556              		.loc 1 203 0
+ 557              		.cfi_startproc
+ 558              		@ args = 0, pretend = 0, frame = 0
+ 559              		@ frame_needed = 0, uses_anonymous_args = 0
+ 560 0000 70B5     		push	{r4, r5, r6, lr}
+ 561              	.LCFI7:
+ 562              		.cfi_def_cfa_offset 16
+ 563              		.cfi_offset 4, -16
+ 564              		.cfi_offset 5, -12
+ 565              		.cfi_offset 6, -8
+ 566              		.cfi_offset 14, -4
+ 567 0002 84B0     		sub	sp, sp, #16
+ 568              	.LCFI8:
+ 569              		.cfi_def_cfa_offset 32
+ 204:./module/src/rtc.c **** 	RTC_GetTime(&RTC_Time);
+ 570              		.loc 1 204 0
+ 571 0004 084C     		ldr	r4, .L44
+ 572 0006 2046     		mov	r0, r4
+ 573 0008 FFF7FEFF 		bl	RTC_GetTime
+ 574              	.LVL67:
+ 205:./module/src/rtc.c **** 	printf("%4lu-%2u-%2u | %2u:%2u:%2u\n",RTC_Time.tm_year,\
+ 206:./module/src/rtc.c **** 									RTC_Time.tm_mon,\
+ 575              		.loc 1 206 0
+ 576 000c 2279     		ldrb	r2, [r4, #4]	@ zero_extendqisi2
+ 207:./module/src/rtc.c **** 									RTC_Time.tm_mday,\
+ 577              		.loc 1 207 0
+ 578 000e E378     		ldrb	r3, [r4, #3]	@ zero_extendqisi2
+ 208:./module/src/rtc.c **** 									RTC_Time.tm_hour,\
+ 579              		.loc 1 208 0
+ 580 0010 A078     		ldrb	r0, [r4, #2]	@ zero_extendqisi2
+ 209:./module/src/rtc.c **** 									RTC_Time.tm_min,\
+ 581              		.loc 1 209 0
+ 582 0012 6578     		ldrb	r5, [r4, #1]	@ zero_extendqisi2
+ 210:./module/src/rtc.c **** 									RTC_Time.tm_sec);
+ 583              		.loc 1 210 0
+ 584 0014 2678     		ldrb	r6, [r4]	@ zero_extendqisi2
+ 205:./module/src/rtc.c **** 									RTC_Time.tm_mon,\
+ 585              		.loc 1 205 0
+ 586 0016 A168     		ldr	r1, [r4, #8]
+ 587 0018 0296     		str	r6, [sp, #8]
+ 588 001a 0195     		str	r5, [sp, #4]
+ 589 001c 0090     		str	r0, [sp]
+ 590 001e 0348     		ldr	r0, .L44+4
+ 591 0020 FFF7FEFF 		bl	printf
+ 592              	.LVL68:
+ 211:./module/src/rtc.c **** }
+ 593              		.loc 1 211 0
+ 594 0024 04B0     		add	sp, sp, #16
+ 595              	.LCFI9:
+ 596              		.cfi_def_cfa_offset 16
+ 597              		@ sp needed
+ 598 0026 70BD     		pop	{r4, r5, r6, pc}
+ARM GAS  /tmp/ccvAdnqo.s 			page 15
+
+
+ 599              	.L45:
+ 600              		.align	2
+ 601              	.L44:
+ 602 0028 00000000 		.word	RTC_Time
+ 603 002c 00000000 		.word	.LC0
+ 604              		.cfi_endproc
+ 605              	.LFE37:
+ 607              		.section	.text.RTC_IRQHandler,"ax",%progbits
+ 608              		.align	2
+ 609              		.global	RTC_IRQHandler
+ 610              		.thumb
+ 611              		.thumb_func
+ 613              	RTC_IRQHandler:
+ 614              	.LFB38:
+ 212:./module/src/rtc.c **** 
+ 213:./module/src/rtc.c **** 
+ 214:./module/src/rtc.c **** //RTC中断处理函数
+ 215:./module/src/rtc.c **** void RTC_IRQHandler(void)
+ 216:./module/src/rtc.c **** {
+ 615              		.loc 1 216 0
+ 616              		.cfi_startproc
+ 617              		@ args = 0, pretend = 0, frame = 0
+ 618              		@ frame_needed = 0, uses_anonymous_args = 0
+ 619 0000 08B5     		push	{r3, lr}
+ 620              	.LCFI10:
+ 621              		.cfi_def_cfa_offset 8
+ 622              		.cfi_offset 3, -8
+ 623              		.cfi_offset 14, -4
+ 217:./module/src/rtc.c **** 	if(RTC_GetFlagStatus(RTC_FLAG_SEC) != RESET)
+ 624              		.loc 1 217 0
+ 625 0002 0120     		movs	r0, #1
+ 626 0004 FFF7FEFF 		bl	RTC_GetFlagStatus
+ 627              	.LVL69:
+ 628 0008 28B1     		cbz	r0, .L47
+ 218:./module/src/rtc.c **** 	{
+ 219:./module/src/rtc.c **** 		RTC_GetTime(&RTC_Time);
+ 629              		.loc 1 219 0
+ 630 000a 0748     		ldr	r0, .L50
+ 631 000c FFF7FEFF 		bl	RTC_GetTime
+ 632              	.LVL70:
+ 220:./module/src/rtc.c **** 		RTC_ClearITPendingBit(RTC_IT_SEC);
+ 633              		.loc 1 220 0
+ 634 0010 0120     		movs	r0, #1
+ 635 0012 FFF7FEFF 		bl	RTC_ClearITPendingBit
+ 636              	.LVL71:
+ 637              	.L47:
+ 221:./module/src/rtc.c **** 	}	
+ 222:./module/src/rtc.c **** 	if(RTC_GetFlagStatus(RTC_FLAG_ALR) != RESET)
+ 638              		.loc 1 222 0
+ 639 0016 0220     		movs	r0, #2
+ 640 0018 FFF7FEFF 		bl	RTC_GetFlagStatus
+ 641              	.LVL72:
+ 642 001c 10B1     		cbz	r0, .L46
+ 223:./module/src/rtc.c **** 	{
+ 224:./module/src/rtc.c **** 		RTC_ClearITPendingBit(RTC_IT_ALR);
+ 643              		.loc 1 224 0
+ 644 001e 0220     		movs	r0, #2
+ARM GAS  /tmp/ccvAdnqo.s 			page 16
+
+
+ 645 0020 FFF7FEFF 		bl	RTC_ClearITPendingBit
+ 646              	.LVL73:
+ 647              	.L46:
+ 648 0024 08BD     		pop	{r3, pc}
+ 649              	.L51:
+ 650 0026 00BF     		.align	2
+ 651              	.L50:
+ 652 0028 00000000 		.word	RTC_Time
+ 653              		.cfi_endproc
+ 654              	.LFE38:
+ 656              		.comm	RTC_Time,12,4
+ 657              		.section	.rodata.mon_p,"a",%progbits
+ 658              		.align	2
+ 659              		.set	.LANCHOR1,. + 0
+ 662              	mon_p:
+ 663 0000 1F000000 		.word	31
+ 664 0004 1C000000 		.word	28
+ 665 0008 1F000000 		.word	31
+ 666 000c 1E000000 		.word	30
+ 667 0010 1F000000 		.word	31
+ 668 0014 1E000000 		.word	30
+ 669 0018 1F000000 		.word	31
+ 670 001c 1F000000 		.word	31
+ 671 0020 1E000000 		.word	30
+ 672 0024 1F000000 		.word	31
+ 673 0028 1E000000 		.word	30
+ 674 002c 1F000000 		.word	31
+ 675              		.section	.rodata.str1.4,"aMS",%progbits,1
+ 676              		.align	2
+ 677              	.LC0:
+ 678 0000 25346C75 		.ascii	"%4lu-%2u-%2u | %2u:%2u:%2u\012\000"
+ 678      2D253275 
+ 678      2D253275 
+ 678      207C2025 
+ 678      32753A25 
+ 679              		.section	.rodata.mon_r,"a",%progbits
+ 680              		.align	2
+ 681              		.set	.LANCHOR0,. + 0
+ 684              	mon_r:
+ 685 0000 1F000000 		.word	31
+ 686 0004 1D000000 		.word	29
+ 687 0008 1F000000 		.word	31
+ 688 000c 1E000000 		.word	30
+ 689 0010 1F000000 		.word	31
+ 690 0014 1E000000 		.word	30
+ 691 0018 1F000000 		.word	31
+ 692 001c 1F000000 		.word	31
+ 693 0020 1E000000 		.word	30
+ 694 0024 1F000000 		.word	31
+ 695 0028 1E000000 		.word	30
+ 696 002c 1F000000 		.word	31
+ 697              		.text
+ 698              	.Letext0:
+ 699              		.file 2 "/opt/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/machine/_default_types.h"
+ 700              		.file 3 "/opt/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/sys/_stdint.h"
+ 701              		.file 4 "cmsis/stm32f10x.h"
+ 702              		.file 5 "module/inc/rtc.h"
+ARM GAS  /tmp/ccvAdnqo.s 			page 17
+
+
+ 703              		.file 6 "cmsis/core_cm3.h"
+ 704              		.file 7 "libraries/inc/stm32f10x_rcc.h"
+ 705              		.file 8 "libraries/inc/stm32f10x_pwr.h"
+ 706              		.file 9 "libraries/inc/stm32f10x_bkp.h"
+ 707              		.file 10 "libraries/inc/stm32f10x_rtc.h"
+ 708              		.file 11 "module/inc/sys.h"
+ 709              		.file 12 "/opt/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/stdio.h"
+ARM GAS  /tmp/ccvAdnqo.s 			page 18
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 rtc.c
+     /tmp/ccvAdnqo.s:20     .text.RTC_Config:00000000 $t
+     /tmp/ccvAdnqo.s:25     .text.RTC_Config:00000000 RTC_Config
+     /tmp/ccvAdnqo.s:100    .text.RTC_NVIC_Config:00000000 $t
+     /tmp/ccvAdnqo.s:105    .text.RTC_NVIC_Config:00000000 RTC_NVIC_Config
+     /tmp/ccvAdnqo.s:154    .text.RTC_GetYearState:00000000 $t
+     /tmp/ccvAdnqo.s:159    .text.RTC_GetYearState:00000000 RTC_GetYearState
+     /tmp/ccvAdnqo.s:204    .text.RTC_GetYearState:00000034 $d
+     /tmp/ccvAdnqo.s:209    .text.SecTime_NormTime:00000000 $t
+     /tmp/ccvAdnqo.s:214    .text.SecTime_NormTime:00000000 SecTime_NormTime
+     /tmp/ccvAdnqo.s:386    .text.SecTime_NormTime:000000d4 $d
+     /tmp/ccvAdnqo.s:397    .text.NormTime_SecTime:00000000 $t
+     /tmp/ccvAdnqo.s:402    .text.NormTime_SecTime:00000000 NormTime_SecTime
+     /tmp/ccvAdnqo.s:481    .text.NormTime_SecTime:00000068 $d
+     /tmp/ccvAdnqo.s:488    .text.RTC_GetTime:00000000 $t
+     /tmp/ccvAdnqo.s:493    .text.RTC_GetTime:00000000 RTC_GetTime
+     /tmp/ccvAdnqo.s:519    .text.RTC_SetTime:00000000 $t
+     /tmp/ccvAdnqo.s:524    .text.RTC_SetTime:00000000 RTC_SetTime
+     /tmp/ccvAdnqo.s:549    .text.RTC_PutTime:00000000 $t
+     /tmp/ccvAdnqo.s:554    .text.RTC_PutTime:00000000 RTC_PutTime
+     /tmp/ccvAdnqo.s:602    .text.RTC_PutTime:00000028 $d
+                            *COM*:0000000c RTC_Time
+     /tmp/ccvAdnqo.s:608    .text.RTC_IRQHandler:00000000 $t
+     /tmp/ccvAdnqo.s:613    .text.RTC_IRQHandler:00000000 RTC_IRQHandler
+     /tmp/ccvAdnqo.s:652    .text.RTC_IRQHandler:00000028 $d
+     /tmp/ccvAdnqo.s:658    .rodata.mon_p:00000000 $d
+     /tmp/ccvAdnqo.s:662    .rodata.mon_p:00000000 mon_p
+     /tmp/ccvAdnqo.s:676    .rodata.str1.4:00000000 $d
+     /tmp/ccvAdnqo.s:680    .rodata.mon_r:00000000 $d
+     /tmp/ccvAdnqo.s:684    .rodata.mon_r:00000000 mon_r
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+RCC_APB1PeriphClockCmd
+PWR_BackupAccessCmd
+BKP_DeInit
+RCC_LSEConfig
+RCC_GetFlagStatus
+RCC_RTCCLKConfig
+RCC_RTCCLKCmd
+RTC_WaitForSynchro
+RTC_WaitForLastTask
+RTC_SetPrescaler
+RTC_SetCounter
+RTC_SetAlarm
+RTC_ITConfig
+STM32_NVIC_SetPriority
+RTC_GetCounter
+printf
+RTC_GetFlagStatus
+RTC_ClearITPendingBit

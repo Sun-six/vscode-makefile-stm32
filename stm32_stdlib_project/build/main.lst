@@ -1,0 +1,199 @@
+ARM GAS  /tmp/ccTmtJHP.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"main.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.main,"ax",%progbits
+  20              		.align	2
+  21              		.global	main
+  22              		.thumb
+  23              		.thumb_func
+  25              	main:
+  26              	.LFB30:
+  27              		.file 1 "./user/main.c"
+   1:./user/main.c **** #include "stm32f10x.h"
+   2:./user/main.c **** #include "delay.h"
+   3:./user/main.c **** #include "usart.h"
+   4:./user/main.c **** #include "stdio.h"
+   5:./user/main.c **** #include "led.h"
+   6:./user/main.c **** #include "beep.h"
+   7:./user/main.c **** int main(void)
+   8:./user/main.c **** {
+  28              		.loc 1 8 0
+  29              		.cfi_startproc
+  30              		@ Volatile: function does not return.
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33 0000 80B5     		push	{r7, lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 8
+  36              		.cfi_offset 7, -8
+  37              		.cfi_offset 14, -4
+   9:./user/main.c **** 	LED_GPIO_Config();
+  38              		.loc 1 9 0
+  39 0002 FFF7FEFF 		bl	LED_GPIO_Config
+  40              	.LVL0:
+  10:./user/main.c **** 	BEEP_GPIO_Config();
+  41              		.loc 1 10 0
+  42 0006 FFF7FEFF 		bl	BEEP_GPIO_Config
+  43              	.LVL1:
+  11:./user/main.c **** 	Delay_Init();
+  44              		.loc 1 11 0
+  45 000a FFF7FEFF 		bl	Delay_Init
+  46              	.LVL2:
+  12:./user/main.c **** 	USARTx_Config(USART1,115200);
+ARM GAS  /tmp/ccTmtJHP.s 			page 2
+
+
+  47              		.loc 1 12 0
+  48 000e 1B4C     		ldr	r4, .L5
+  49 0010 4FF4E131 		mov	r1, #115200
+  50 0014 2046     		mov	r0, r4
+  51 0016 FFF7FEFF 		bl	USARTx_Config
+  52              	.LVL3:
+  13:./user/main.c **** 	USARTx_NVIC_Config(USART1,1,1);
+  53              		.loc 1 13 0
+  54 001a 0122     		movs	r2, #1
+  55 001c 1146     		mov	r1, r2
+  56 001e 2046     		mov	r0, r4
+  57 0020 FFF7FEFF 		bl	USARTx_NVIC_Config
+  58              	.LVL4:
+  14:./user/main.c **** 	TIMx_Current_Config(TIM2,1000,72);
+  59              		.loc 1 14 0
+  60 0024 4822     		movs	r2, #72
+  61 0026 4FF47A71 		mov	r1, #1000
+  62 002a 4FF08040 		mov	r0, #1073741824
+  63 002e FFF7FEFF 		bl	TIMx_Current_Config
+  64              	.LVL5:
+  15:./user/main.c **** 	TIMx_Current_NVIC_Config(TIM2,1,0);
+  65              		.loc 1 15 0
+  66 0032 0022     		movs	r2, #0
+  67 0034 0121     		movs	r1, #1
+  68 0036 4FF08040 		mov	r0, #1073741824
+  69 003a FFF7FEFF 		bl	TIMx_Current_NVIC_Config
+  70              	.LVL6:
+  71              	.L3:
+  16:./user/main.c **** 	while(1)
+  17:./user/main.c **** 	{
+  18:./user/main.c **** 		if(USART1_RX_FLAG)
+  72              		.loc 1 18 0
+  73 003e 104B     		ldr	r3, .L5+4
+  74 0040 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+  75 0042 53B1     		cbz	r3, .L2
+  19:./user/main.c **** 		{
+  20:./user/main.c **** 			USART1_RX_BUFF[USART1_RX_COUNT]='\0';
+  76              		.loc 1 20 0
+  77 0044 0F4D     		ldr	r5, .L5+8
+  78 0046 2B68     		ldr	r3, [r5]
+  79 0048 0F49     		ldr	r1, .L5+12
+  80 004a 0024     		movs	r4, #0
+  81 004c CC54     		strb	r4, [r1, r3]
+  21:./user/main.c **** 			USARTx_SendString(USART1,(char *)USART1_RX_BUFF);
+  82              		.loc 1 21 0
+  83 004e 0B48     		ldr	r0, .L5
+  84 0050 FFF7FEFF 		bl	USARTx_SendString
+  85              	.LVL7:
+  22:./user/main.c **** 			USART1_RX_COUNT=0;
+  86              		.loc 1 22 0
+  87 0054 2C60     		str	r4, [r5]
+  23:./user/main.c **** 			USART1_RX_FLAG=0;
+  88              		.loc 1 23 0
+  89 0056 0A4B     		ldr	r3, .L5+4
+  90 0058 1C70     		strb	r4, [r3]
+  91              	.L2:
+  24:./user/main.c **** 		}
+ARM GAS  /tmp/ccTmtJHP.s 			page 3
+
+
+  25:./user/main.c **** 		// BEEP=1;
+  26:./user/main.c **** 		LED1=0;
+  92              		.loc 1 26 0
+  93 005a 0C4E     		ldr	r6, .L5+16
+  94 005c 0025     		movs	r5, #0
+  95 005e 3560     		str	r5, [r6]
+  27:./user/main.c **** 		LED0=1;
+  96              		.loc 1 27 0
+  97 0060 0B4C     		ldr	r4, .L5+20
+  98 0062 0127     		movs	r7, #1
+  99 0064 2760     		str	r7, [r4]
+  28:./user/main.c **** 		DelayMs(500);
+ 100              		.loc 1 28 0
+ 101 0066 4FF4FA70 		mov	r0, #500
+ 102 006a FFF7FEFF 		bl	DelayMs
+ 103              	.LVL8:
+  29:./user/main.c **** 		// BEEP=0;
+  30:./user/main.c **** 		LED1=1;
+ 104              		.loc 1 30 0
+ 105 006e 3760     		str	r7, [r6]
+  31:./user/main.c **** 		LED0=0;
+ 106              		.loc 1 31 0
+ 107 0070 2560     		str	r5, [r4]
+  32:./user/main.c **** 		DelayMs(500);
+ 108              		.loc 1 32 0
+ 109 0072 4FF4FA70 		mov	r0, #500
+ 110 0076 FFF7FEFF 		bl	DelayMs
+ 111              	.LVL9:
+  33:./user/main.c **** 	}
+ 112              		.loc 1 33 0
+ 113 007a E0E7     		b	.L3
+ 114              	.L6:
+ 115              		.align	2
+ 116              	.L5:
+ 117 007c 00380140 		.word	1073821696
+ 118 0080 00000000 		.word	USART1_RX_FLAG
+ 119 0084 00000000 		.word	USART1_RX_COUNT
+ 120 0088 00000000 		.word	USART1_RX_BUFF
+ 121 008c 94012342 		.word	1109590420
+ 122 0090 94812142 		.word	1109492116
+ 123              		.cfi_endproc
+ 124              	.LFE30:
+ 126              		.text
+ 127              	.Letext0:
+ 128              		.file 2 "/opt/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/machine/_default_types.h"
+ 129              		.file 3 "/opt/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/sys/_stdint.h"
+ 130              		.file 4 "cmsis/stm32f10x.h"
+ 131              		.file 5 "cmsis/core_cm3.h"
+ 132              		.file 6 "module/inc/usart.h"
+ 133              		.file 7 "module/inc/led.h"
+ 134              		.file 8 "module/inc/beep.h"
+ 135              		.file 9 "module/inc/delay.h"
+ 136              		.file 10 "module/inc/timer.h"
+ARM GAS  /tmp/ccTmtJHP.s 			page 4
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 main.c
+     /tmp/ccTmtJHP.s:20     .text.main:00000000 $t
+     /tmp/ccTmtJHP.s:25     .text.main:00000000 main
+     /tmp/ccTmtJHP.s:117    .text.main:0000007c $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+LED_GPIO_Config
+BEEP_GPIO_Config
+Delay_Init
+USARTx_Config
+USARTx_NVIC_Config
+TIMx_Current_Config
+TIMx_Current_NVIC_Config
+USARTx_SendString
+DelayMs
+USART1_RX_FLAG
+USART1_RX_COUNT
+USART1_RX_BUFF

@@ -1,0 +1,127 @@
+ARM GAS  /tmp/cc56MTUH.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"exti.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.XPT2046_EXIT_Config,"ax",%progbits
+  20              		.align	2
+  21              		.global	XPT2046_EXIT_Config
+  22              		.thumb
+  23              		.thumb_func
+  25              	XPT2046_EXIT_Config:
+  26              	.LFB30:
+  27              		.file 1 "./module/src/exti.c"
+   1:./module/src/exti.c **** #include "exti.h"
+   2:./module/src/exti.c **** 
+   3:./module/src/exti.c **** void XPT2046_EXIT_Config(void)
+   4:./module/src/exti.c **** {
+  28              		.loc 1 4 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 8
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32 0000 30B5     		push	{r4, r5, lr}
+  33              	.LCFI0:
+  34              		.cfi_def_cfa_offset 12
+  35              		.cfi_offset 4, -12
+  36              		.cfi_offset 5, -8
+  37              		.cfi_offset 14, -4
+  38 0002 83B0     		sub	sp, sp, #12
+  39              	.LCFI1:
+  40              		.cfi_def_cfa_offset 24
+   5:./module/src/exti.c **** 	EXTI_InitTypeDef EXTI_InitStructure;
+   6:./module/src/exti.c **** 	//开启复用时钟
+   7:./module/src/exti.c **** 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO,ENABLE);
+  41              		.loc 1 7 0
+  42 0004 0121     		movs	r1, #1
+  43 0006 0846     		mov	r0, r1
+  44 0008 FFF7FEFF 		bl	RCC_APB2PeriphClockCmd
+  45              	.LVL0:
+   8:./module/src/exti.c **** 	//绑定外部中断
+   9:./module/src/exti.c **** 	GPIO_EXTILineConfig(GPIO_PortSourceGPIOF,GPIO_PinSource10);
+  46              		.loc 1 9 0
+  47 000c 0A21     		movs	r1, #10
+  48 000e 0520     		movs	r0, #5
+  49 0010 FFF7FEFF 		bl	GPIO_EXTILineConfig
+ARM GAS  /tmp/cc56MTUH.s 			page 2
+
+
+  50              	.LVL1:
+  10:./module/src/exti.c **** 	//配置外部中断
+  11:./module/src/exti.c **** 	EXTI_InitStructure.EXTI_Line = EXTI_Line10;
+  51              		.loc 1 11 0
+  52 0014 4FF48063 		mov	r3, #1024
+  53 0018 0093     		str	r3, [sp]
+  12:./module/src/exti.c **** 	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+  54              		.loc 1 12 0
+  55 001a 0024     		movs	r4, #0
+  56 001c 8DF80440 		strb	r4, [sp, #4]
+  13:./module/src/exti.c **** 	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
+  57              		.loc 1 13 0
+  58 0020 1023     		movs	r3, #16
+  59 0022 8DF80530 		strb	r3, [sp, #5]
+  14:./module/src/exti.c **** 	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+  60              		.loc 1 14 0
+  61 0026 0125     		movs	r5, #1
+  62 0028 8DF80650 		strb	r5, [sp, #6]
+  15:./module/src/exti.c **** 	EXTI_Init(&EXTI_InitStructure);
+  63              		.loc 1 15 0
+  64 002c 6846     		mov	r0, sp
+  65 002e FFF7FEFF 		bl	EXTI_Init
+  66              	.LVL2:
+  16:./module/src/exti.c **** 	//设置外部中断NVIC优先级
+  17:./module/src/exti.c **** 	STM32_NVIC_SetPriority(EXTI15_10_IRQn,0,1);
+  67              		.loc 1 17 0
+  68 0032 2A46     		mov	r2, r5
+  69 0034 2146     		mov	r1, r4
+  70 0036 2820     		movs	r0, #40
+  71 0038 FFF7FEFF 		bl	STM32_NVIC_SetPriority
+  72              	.LVL3:
+  18:./module/src/exti.c **** }
+  73              		.loc 1 18 0
+  74 003c 03B0     		add	sp, sp, #12
+  75              	.LCFI2:
+  76              		.cfi_def_cfa_offset 12
+  77              		@ sp needed
+  78 003e 30BD     		pop	{r4, r5, pc}
+  79              		.cfi_endproc
+  80              	.LFE30:
+  82              		.text
+  83              	.Letext0:
+  84              		.file 2 "/opt/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/machine/_default_types.h"
+  85              		.file 3 "/opt/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/sys/_stdint.h"
+  86              		.file 4 "cmsis/stm32f10x.h"
+  87              		.file 5 "libraries/inc/stm32f10x_exti.h"
+  88              		.file 6 "libraries/inc/stm32f10x_rcc.h"
+  89              		.file 7 "libraries/inc/stm32f10x_gpio.h"
+  90              		.file 8 "module/inc/sys.h"
+  91              		.file 9 "cmsis/core_cm3.h"
+ARM GAS  /tmp/cc56MTUH.s 			page 3
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 exti.c
+     /tmp/cc56MTUH.s:20     .text.XPT2046_EXIT_Config:00000000 $t
+     /tmp/cc56MTUH.s:25     .text.XPT2046_EXIT_Config:00000000 XPT2046_EXIT_Config
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+RCC_APB2PeriphClockCmd
+GPIO_EXTILineConfig
+EXTI_Init
+STM32_NVIC_SetPriority
